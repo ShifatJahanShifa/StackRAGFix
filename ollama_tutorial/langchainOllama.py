@@ -4,7 +4,7 @@ from langchain_ollama import OllamaLLM
 llm = OllamaLLM(model="llama3:8b")
 
 response = llm.invoke("what is the capital of france?")
-print(response) 
+print(response)
 
 # chat model
 from langchain_ollama import ChatOllama

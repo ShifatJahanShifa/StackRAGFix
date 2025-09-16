@@ -54,9 +54,11 @@
 
 #     ask_llama("Hello Llama! How are you?")
 
-import requests
 import subprocess
 import time
+
+import requests
+
 
 # Check if Ollama is running
 def is_ollama_running():
@@ -66,6 +68,7 @@ def is_ollama_running():
     except requests.exceptions.ConnectionError:
         return False
 
+
 # Start Ollama if it's not running
 def start_ollama():
     subprocess.Popen(
@@ -73,18 +76,16 @@ def start_ollama():
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
         stdin=subprocess.DEVNULL,
-        close_fds=True
+        close_fds=True,
     )
     print("✅ Ollama started in the background...")
+
 
 # Ask a question to Llama (non-streaming version)
 def ask_llama(prompt: str):
     res = requests.post(
         "http://localhost:11434/api/generate",
-        json={
-            "model": "llama3",   # or "llama2"
-            "prompt": prompt
-        }
+        json={"model": "llama3", "prompt": prompt},  # or "llama2"
     )
     # The API returns JSON lines, we want the "response" field
     answer = ""
@@ -95,6 +96,7 @@ def ask_llama(prompt: str):
                 answer += data["response"]
 
     print("\n🤖 Llama says:", answer.strip())
+
 
 if __name__ == "__main__":
     if not is_ollama_running():

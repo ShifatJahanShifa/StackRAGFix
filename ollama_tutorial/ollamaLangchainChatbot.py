@@ -1,6 +1,6 @@
 # chatbot with langchain ollama
-from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
 
 # construct the template
 promptTemplate = """
@@ -13,20 +13,21 @@ promptTemplate = """
     Answer:
 """
 
-llm = ChatOllama(model='llama3:8b')
+llm = ChatOllama(model="llama3:8b")
 prompt = ChatPromptTemplate.from_template(promptTemplate)
 
 chain = prompt | llm
 
-def handleChat(): 
+
+def handleChat():
     context = ""
     print("Welcome to the AI chatbot! Type 'exit' to quit.")
     while True:
-        userInput = input("Human: ") 
-        if userInput.lower() == 'exit': 
+        userInput = input("Human: ")
+        if userInput.lower() == "exit":
             break
         response = chain.invoke({"context": context, "question": userInput})
-        print("AI: ",response.content)
+        print("AI: ", response.content)
         context += f"\nUser: {userInput}\nAI: {response.content}"
 
 

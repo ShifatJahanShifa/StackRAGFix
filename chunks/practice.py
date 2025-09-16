@@ -14,4 +14,3 @@ splitter = RecursiveCharacterTextSplitter(
 chunks = splitter.split_text(text)
 for i, chunk in enumerate(chunks):
     print(f"Chunk {i+1}, {len(chunk)}: {(chunk)}")
-
