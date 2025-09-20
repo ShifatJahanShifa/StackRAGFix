@@ -1,0 +1,6 @@
+__pycache__
+.env
+datasets
+db
+snapshots.txt
+test.py
