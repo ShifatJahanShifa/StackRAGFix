@@ -2,4 +2,4 @@ DATA_FOLDER = "./data"
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 100
 PERSISTENT_DATABASE_DIRECTORY = "./db/chromaLangchainDB"
-COLLECTION_NAME = "boardgames"
+COLLECTION_NAME = "project_portfolio"

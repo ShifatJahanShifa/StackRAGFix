@@ -1,1 +1,3 @@
 langchain-groq
+qdrant-client 
+langchain-qdrant
