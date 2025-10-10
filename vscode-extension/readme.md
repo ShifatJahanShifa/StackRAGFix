@@ -29,3 +29,30 @@ my-rag-extension/
 │
 └── README.md
 
+
+
+## current documentation 
+
+vscode-extension/
+│
+├── src/
+│   ├── backend/                # Future RAG logic, model calls, etc.
+│   ├── panel/
+│   │   └── chat_panel.ts       # Handles webview creation + message passing
+│   ├── test/                   # Test files (optional)
+│   ├── type/                   # Type definitions (optional)
+│   └── extension.ts            # Entry point (registers command, opens chat)
+│
+├── out/                        # Compiled JS output (from TypeScript)
+│   ├── extension.js
+│   └── panel/chat_panel.js
+│
+├── webview-ui/                 # React frontend (your chat UI)
+│   ├── src/                    # All React components
+│   ├── index.html
+│   ├── vite.config.ts
+│   └── tailwind.config.js
+│
+├── package.json                # Extension build + dependencies
+├── tsconfig.json               # TypeScript config for extension
+└── README.md

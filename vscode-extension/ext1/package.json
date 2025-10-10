@@ -9,15 +9,30 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+  ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "ext1.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ragChatContainer",
+          "title": "RAG Assistant",
+          "icon": "media/chat-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "ragChatContainer": [
+        {
+          "type": "webview",
+          "id": "ragChatView",
+          "name": "Chat",
+          "icon": "media/chat-icon.svg"
+        }
+      ]
+    }
+
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
