@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import fetch from "node-fetch";
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "ragChatView";
@@ -45,13 +46,34 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this.getHtml(webviewView.webview, scriptUri, styleUri);
 
-    // Listen for messages from the webview
     webviewView.webview.onDidReceiveMessage(async (message) => {
+      console.log("Received from webview:", message)
       if (message.type === "chat") {
-        webviewView.webview.postMessage({
-          role: "bot",
-          text: "Hello from sidebar backend!",
-        });
+        try {
+          const res = await fetch("http://localhost:8000/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query: message.text,
+              history: message.history || [],
+            }),
+          });
+
+          const data = await res.json() as { response: string };
+          
+          console.log("seeee ", data.response, "lookkkk", res.status)
+          // Send response back to the webview
+          webviewView.webview.postMessage({
+            role: "bot",
+            text: data.response,
+          });
+        } catch (err) {
+          console.error("Backend call failed:", err);
+          webviewView.webview.postMessage({
+            role: "bot",
+            text: "Error: Unable to connect to backend",
+          });
+        }
       }
     });
   }
