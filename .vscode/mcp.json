@@ -1,0 +1,14 @@
+{
+	"servers": {
+		"my-mcp-server": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"tsx",
+				"mcp-server/main.ts"
+			]
+		}
+	},
+	"inputs": []
+}
