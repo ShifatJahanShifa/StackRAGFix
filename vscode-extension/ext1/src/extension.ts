@@ -1,6 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { spawn } from "child_process";
+import * as path from "path";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -24,41 +26,42 @@ import * as vscode from 'vscode';
 
 // This method is called when your extension is deactivated
 
-// import { ChatPanel } from "../ext1/src/panel/ChatPanel";
-
-// export function activate(context: vscode.ExtensionContext) {
-	//   const disposable = vscode.commands.registerCommand("rag.openChat", () => {
-		//     ChatPanel.createOrShow(context.extensionUri);
-		//   });
-		
-		//   context.subscriptions.push(disposable);
-		// }
-		
-		
-
-// import { ChatPanel } from "./panel/chat_panel"
-
-// export function activate(context: vscode.ExtensionContext) {
-// 	const disposable = vscode.commands.registerCommand("rag.openChat", () => {
-// 		ChatPanel.createOrShow(context.extensionUri);
-// 	});
-	
-// 	context.subscriptions.push(disposable);
-// }
-
-// export function deactivate() {}
-
-// import * as vscode from "vscode";
 import { ChatViewProvider } from "./view/chatViewProvider"
+let mcpProcess: any = null;
 
-export function activate(context: vscode.ExtensionContext) {
-	console.log("Extension activated!");
+export async function activate(context: vscode.ExtensionContext) {
+  console.log("🚀 VSCode extension activated");
+  console.log("🔍 Extension path:", context.extensionPath);
 
-  const provider = new ChatViewProvider(context.extensionUri);
+	const serverPath = path.join(context.extensionPath, "out", "mcp", "server.js");
+  console.log("🔗 MCP server path:", serverPath);
+
+  // Spawn MCP server as a detached, independent process
+  mcpProcess = spawn("node", [serverPath], {
+    stdio: "inherit",
+    detached: true, //  keeps process alive independently
+  });
+
+  mcpProcess.on("spawn", () => console.log("✅ MCP server process started"));
+  mcpProcess.on("exit", (code: any) =>
+    console.log(`🛑 MCP server exited with code ${code}`)
+  );
+  mcpProcess.on("error", (err: Error) => console.error("MCP server error:", err));
+
+   const provider = new ChatViewProvider(context.extensionUri);
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("ragChatView", provider)
   );
 }
 
-export function deactivate() {}
+export function deactivate() {
+  if (mcpProcess) {
+    console.log("🔻 Killing MCP server...");
+    try {
+      process.kill(-mcpProcess.pid); // kill detached group
+    } catch (err) {
+      console.warn("⚠️ Could not kill MCP process:", err);
+    }
+  }
+}

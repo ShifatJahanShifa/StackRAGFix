@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from langchain import hub
 from langchain.agents import AgentExecutor, create_tool_calling_agent
@@ -67,6 +68,8 @@ tools = [retrieve]
 agent = create_tool_calling_agent(chat_model, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
+
+
 # ==== API Models ====
 class ChatRequest(BaseModel):
     query: str
@@ -93,4 +96,17 @@ async def chat(req: ChatRequest):
         return ChatResponse(response=result["output"])
     except Exception as e:
         print("errorrrr", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/retrieve")
+async def retrieve_info(req: ChatRequest):
+    """
+    Only retrieve relevant context from vector store.
+    Returns raw retrieved text for Copilot to use in its own generation.
+    """
+    try:
+        # Use the same retrieve() tool defined above
+        retrieved_text = retrieve(req.query)
+        return JSONResponse(content={"retrieved": retrieved_text})
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -8,6 +8,15 @@
 				"tsx",
 				"mcp-server/main.ts"
 			]
+		},
+		"my-ext-mcp-server": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"tsx",
+				"vscode-extension/ext1/src/mcp/server.ts"
+			]
 		}
 	},
 	"inputs": []
