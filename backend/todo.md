@@ -1,0 +1,12 @@
+- how to manage history?
+- what are other apis?
+- asynchronous make sure
+- refactoring using global state
+- globals resetting when?
+- model instantiate in lazy instantiation style
+- i cannot fully trust on the prompt. so manually check output always
+- dimension, token part
+- ast.literal_eval, ensure this
+- if i pass string, then how will it handle?
+- [USER-ADDED CONTEXT]
+- show when api key has been expired.
