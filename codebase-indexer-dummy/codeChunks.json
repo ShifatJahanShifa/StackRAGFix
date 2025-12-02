@@ -1,0 +1,47 @@
+{
+  "fileContents": {},
+  "totalCharacters": 369,
+  "maxChars": 369,
+  "chunks": [
+    {
+      "content": "# Some top-level statements\r\nname = \"Alice\"\r\nage = 25\r\nprint(\"User Info:\", name, age)\r\n# Function 1\r",
+      "metadata": {
+        "filePath": "inputs\\demoPyCode.py",
+        "type": "statements",
+        "ext": "py"
+      }
+    },
+    {
+      "content": "def add_numbers(a, b):\r\n    return a + b\r",
+      "metadata": {
+        "filePath": "inputs\\demoPyCode.py",
+        "type": "function",
+        "ext": "py"
+      }
+    },
+    {
+      "content": "# Function 2\r",
+      "metadata": {
+        "filePath": "inputs\\demoPyCode.py",
+        "type": "statements",
+        "ext": "py"
+      }
+    },
+    {
+      "content": "def greet(person):\r\n    print(\"Hello,\", person)\r",
+      "metadata": {
+        "filePath": "inputs\\demoPyCode.py",
+        "type": "function",
+        "ext": "py"
+      }
+    },
+    {
+      "content": "# Calling the functions\r\nresult = add_numbers(10, 20)\r\nprint(\"Sum is:\", result)\r\ngreet(name)\r\n# Another top-level statement\r\nprint(\"Program finished.\")\r",
+      "metadata": {
+        "filePath": "inputs\\demoPyCode.py",
+        "type": "statements",
+        "ext": "py"
+      }
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "content": "function add(a, b) {\r\n    return a + b;\r\n}",
+    "metadata": {
+      "filePath": "inputs\\example.js",
+      "type": "function",
+      "ext": "js"
+    }
+  },
+  {
+    "content": "multiply = (x, y) => x * y",
+    "metadata": {
+      "filePath": "inputs\\example.js",
+      "type": "function",
+      "ext": "js"
+    }
+  },
+  {
+    "content": "divide = function(a, b) {\r\n    return a / b;\r\n}",
+    "metadata": {
+      "filePath": "inputs\\example.js",
+      "type": "function",
+      "ext": "js"
+    }
+  },
+  {
+    "content": "count = 10",
+    "metadata": {
+      "filePath": "inputs\\example.js",
+      "type": "statements",
+      "ext": "js"
+    }
+  },
+  {
+    "content": "for (let i = 0; i < count; i++) {\r\n    console.log(i);\r\n}",
+    "metadata": {
+      "filePath": "inputs\\example.js",
+      "type": "statements",
+      "ext": "js"
+    }
+  },
+  {
+    "content": "obj = {\r\n    greet() {\r\n        console.log(\"Hello!\");\r\n    }\r\n}",
+    "metadata": {
+      "filePath": "inputs\\example.js",
+      "type": "statements",
+      "ext": "js"
+    }
+  },
+  {
+    "content": "class MyClass {\r\n    sayHi() {\r\n        console.log(\"Hi from class!\");\r\n    }\r\n}",
+    "metadata": {
+      "filePath": "inputs\\example.js",
+      "type": "statements",
+      "ext": "js"
+    }
+  },
+  {
+    "content": "(function() {\r\n    console.log(\"IIFE running\");\r\n})();",
+    "metadata": {
+      "filePath": "inputs\\example.js",
+      "type": "statements",
+      "ext": "js"
+    }
+  }
+]

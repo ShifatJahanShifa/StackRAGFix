@@ -1,0 +1,39 @@
+1. Unit Testing: Testing individual components or functions of a software to ensure they work as expected in isolation.
+
+2. Integration Testing: Testing the interaction between integrated components or systems to verify they work together correctly.
+
+3. System Testing: Testing the complete and integrated software system to evaluate its compliance with specified requirements.
+
+4. Acceptance Testing: Testing performed to determine whether the system meets business requirements and is ready for delivery.
+
+5. Smoke Testing: A preliminary test to check the basic functionality of the application before deeper testing.
+
+6. Sanity Testing: Testing to verify that a specific bug has been fixed and the related functionality works correctly.
+
+7. Regression Testing: Testing existing software functions after changes to ensure new code hasn’t broken old functionality.
+
+8. Performance Testing: Evaluating the speed, responsiveness, and stability of a system under various conditions.
+
+9. Load Testing: Testing the system’s behavior under expected load conditions to identify performance bottlenecks.
+
+10. Stress Testing: Testing the system under extreme load conditions to see how it behaves beyond normal limits.
+
+11. Usability Testing: Evaluating the user interface and user experience for ease of use and intuitiveness.
+
+12. Security Testing: Identifying vulnerabilities, threats, and risks in a software system to prevent malicious attacks.
+
+13. Compatibility Testing: Checking how the software performs on different devices, browsers, operating systems, or environments.
+
+14. Alpha Testing: Internal testing performed by the development team before releasing the product to external users.
+
+15. Beta Testing: Testing conducted by a limited group of external users to gather feedback before final release.
+
+16. Functional Testing: Verifying that each function of the software application operates according to the requirements.
+
+17. Non-Functional Testing: Testing aspects like performance, usability, reliability, and scalability that are not related to specific functions.
+
+18. Exploratory Testing: Simultaneous learning, test design, and execution without predefined test cases.
+
+19. Ad-hoc Testing: Informal testing without any documentation or planning, performed to find defects quickly.
+
+20. Recovery Testing: Testing the system’s ability to recover from crashes, hardware failures, or other problems.
