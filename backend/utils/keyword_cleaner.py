@@ -2,8 +2,6 @@ import json
 import re
 from typing import List
 
-cleaned_keywords = []
-
 
 def clean_keyword(extracted_keyword_list: List) -> List:
     # for extracted_keyword in extracted_keyword_list:
@@ -16,6 +14,7 @@ def clean_keyword(extracted_keyword_list: List) -> List:
     #         except Exception as e:
     #             print("Error parsing:", e, "\nText:", list_str)
 
+    cleaned_keywords = []
     for extracted_keyword in extracted_keyword_list:
         match = re.search(r"\[([\s\S]*?)\]", extracted_keyword)
         if match:

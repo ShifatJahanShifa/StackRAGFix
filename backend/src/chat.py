@@ -3,7 +3,6 @@ import json
 from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_mistralai import ChatMistralAI
 
 from constants.collections import QA_COLLECTION
 from models.model_instances import mistral_chat_model
@@ -17,7 +16,7 @@ load_dotenv()
 async def generate_chat_response(question: str):
     """Main entry point"""
     # === STEP 1: Extract keywords ===
-    extracted_keywords = extract_keywords(question)
+    extracted_keywords = await extract_keywords(question)
 
     # === STEP 2: Retrieve Stack Overflow data ===
     print("\nRetrieve first============\n")
@@ -45,7 +44,3 @@ async def generate_chat_response(question: str):
 
     print(f"\n=== Final Response ===\n{response}")
     return response
-
-
-# if __name__ == "__main__":
-#     asyncio.run(main("What does the &quot;yield&quot; keyword do in Python?"))

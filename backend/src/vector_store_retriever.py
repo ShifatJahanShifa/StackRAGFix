@@ -2,28 +2,27 @@ import pickle
 
 from langchain_chroma import Chroma
 
-# from langchain_core.documents.base import Document
-from constants.file_paths import PERSISTENT_DIRECTORY, PICKLE_PATH
+from constants.file_paths import PERSISTENT_DIRECTORY
 from constants.weights import BM25_RETRIEVER_WEIGHT, VECTOR_RETRIEVER_WEIGHT
 from models.model_instances import mistral_embedding_model
 from src.custom_ensemble_retriever import CustomEnsembleRetriever
+from utils.logger import logger
+from utils.pickle_loader import BM25_RETRIEVER
 
 
 def retrieve(collection_db_name, query):
     try:
         # Connect to existing ChromaDB collection
-        print("🔗 Connecting to ChromaDB for retrieval...")
+        logger.info("🔗 Connecting to ChromaDB for retrieval...")
         vector_store = Chroma(
             collection_name=collection_db_name,
             embedding_function=mistral_embedding_model,
             persist_directory=PERSISTENT_DIRECTORY,  # folder on disk
         )
 
-        print("checkkk")
+        logger.debug("checkkk")
 
-        with open(PICKLE_PATH, "rb") as f:
-            bm25_retriever = pickle.load(f)
-        print("✅ Loaded BM25 retriever from pickle.")
+        bm25_retriever = BM25_RETRIEVER
 
         # ✅ Create vector retriever (no full doc fetch)
         vector_retriever = vector_store.as_retriever(

@@ -3,11 +3,10 @@ import json
 from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_mistralai import ChatMistralAI
 
 from constants.collections import QA_COLLECTION
 from models.model_instances import mistral_chat_model
-from prompts.chat_prompt import CHAT_PROMPT
+from prompts.code_refactoring_prompt import CODE_REFACTORING_PROMPT
 from src.keyword_extractor import extract_keywords
 from src.vector_store_retriever import retrieve
 
@@ -17,7 +16,7 @@ load_dotenv()
 async def refactor_code(question: str):
     """Main entry point"""
     # === STEP 1: Extract keywords ===
-    extracted_keywords = extract_keywords(question)
+    extracted_keywords = await extract_keywords(question)
 
     # === STEP 2: Retrieve Stack Overflow data ===
     print("\nRetrieve first============\n")
@@ -29,9 +28,9 @@ async def refactor_code(question: str):
         [
             (
                 "system",
-                "You are a part of RAG architecture that specializes in generating answers to user queries using Stack Overflow.",
+                "You are a part of RAG architecture that specializes in refactoring code based on user given queries using Stack Overflow.",
             ),
-            ("user", CHAT_PROMPT),
+            ("user", CODE_REFACTORING_PROMPT),
         ]
     )
 
@@ -45,7 +44,3 @@ async def refactor_code(question: str):
 
     print(f"\n=== Final Response ===\n{response}")
     return response
-
-
-# if __name__ == "__main__":
-#     asyncio.run(main("What does the &quot;yield&quot; keyword do in Python?"))
