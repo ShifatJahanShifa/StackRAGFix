@@ -91,14 +91,14 @@ async function splitPythonCodeOptimally(filePath: string, fileContent: string): 
             flushFunctionChunk(i - 1);
             startLine = i;
             inFunction = true;
-            currentIndentation = line.length - line.trimLeft().length;
+            currentIndentation = line.length - line.trimStart().length;
             currentChunk.push(line);
             continue;
         }
 
         // Check if we're still in a function
         if (inFunction) {
-            const lineIndentation = line.length - line.trimLeft().length;
+            const lineIndentation = line.length - line.trimStart().length;
             if (lineIndentation > currentIndentation) {
                 currentChunk.push(line);
             } else {
@@ -185,7 +185,7 @@ async function readPythonFilesConcurrently(files: string[]): Promise<{
 
 export async function processPythonFiles(rootDir: string) {
     const pythonFiles = await findPythonFiles(rootDir);
-    (`Found ${pythonFiles.length} Python files.`);
+    console.log(`Found ${pythonFiles.length} Python files.`);
 
     const result = await readPythonFilesConcurrently(pythonFiles);
     console.log(result)
