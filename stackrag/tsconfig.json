@@ -1,12 +1,17 @@
 {
 	"compilerOptions": {
-		"module": "Node16",
+		"module": "nodenext",
 		"target": "ES2022",
 		"outDir": "out",
 		"lib": [
 			"ES2022"
 		],
 		"sourceMap": true,
+		"moduleResolution": "nodenext",
+		"rewriteRelativeImportExtensions": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true,
 		"rootDir": "src",
 		"strict": true,   /* enable all strict type-checking options */
 		/* Additional Checks */

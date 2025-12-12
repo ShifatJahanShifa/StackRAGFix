@@ -3,11 +3,16 @@
   "displayName": "StackRAG",
   "description": "A coding assistant powered by Stack Overflow and LLM ",
   "version": "0.0.1",
+  "type": "module",
   "engines": {
     "vscode": "^1.107.0"
   },
   "categories": [
     "Other"
+  ],
+  "enabledApiProposals": [
+    "languageModelCapabilities",
+    "languageModelSystem"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
@@ -19,6 +24,9 @@
       }
     ]
   },
+  "vsce": {
+    "skipReadmeCheck": true
+  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
@@ -28,14 +36,26 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.107.0",
+    "@types/esprima": "^4.0.6",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
+    "@types/vscode": "^1.107.0",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
-    "eslint": "^9.36.0",
-    "typescript": "^5.9.3",
     "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2"
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.36.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@chroma-core/default-embed": "^0.1.9",
+    "@langchain/community": "^1.0.7",
+    "@langchain/mistralai": "^1.0.1",
+    "@langchain/textsplitters": "^1.0.1",
+    "@types/uuid": "^10.0.0",
+    "chromadb": "^3.1.7",
+    "esprima": "^4.0.1",
+    "langchain": "^1.1.5",
+    "uuid": "^13.0.0"
   }
 }
