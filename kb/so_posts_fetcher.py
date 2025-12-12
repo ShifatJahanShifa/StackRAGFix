@@ -19,7 +19,11 @@ from constants.tags import JAVASCRIPT_TAG, PYTHON_TAG
 
 load_dotenv()
 
-STACK_EXCHANGE_API_KEY = os.getenv("STACK_EXCHANGE_API_KEY", "your_api_key")
+STACK_EXCHANGE_API_KEY = os.getenv("STACK_EXCHANGE_API_KEY")
+if not STACK_EXCHANGE_API_KEY:
+    raise RuntimeError(
+        "STACK_EXCHANGE_API_KEY environment variable is not set. Please set it to a valid Stack Exchange API key."
+    )
 
 
 def clean_html_content(html_text):
