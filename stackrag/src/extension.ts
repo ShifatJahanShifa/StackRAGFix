@@ -1,9 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import path, { resolve } from 'path';
+import path from 'path';
 
-let webviewPanel: vscode.WebviewPanel | undefined
+let webviewPanel: vscode.WebviewPanel | undefined;
 export function activate(context: vscode.ExtensionContext) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
@@ -15,14 +15,14 @@ export function activate(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand('stackrag.helloWorld', async () => {
 		try {
 			// Step 1: Select available language models (Copilot models will appear if available)
-			const models = await vscode.lm.selectChatModels()
+			const models = await vscode.lm.selectChatModels();
 			if (!models || models.length === 0) {
 				vscode.window.showErrorMessage('No Copilot language models available. Is GitHub Copilot enabled?');
 				return;
 			}
 
 			const model = models[0]; // Use the first available Copilot model
-			console.log('gg',model)
+			console.log('gg',model);
 
 			// Step 2: Get the current editor content
 			const editor = vscode.window.activeTextEditor;
@@ -65,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
 			showInWebview(context, fullText);
 		
 		} catch (error: any) {
-		vscode.window.showErrorMessage(`Copilot error: ${error.message || error}`);
+			vscode.window.showErrorMessage(`Copilot error: ${error.message || error}`);
 		}
 	});
 	context.subscriptions.push(disposable);
