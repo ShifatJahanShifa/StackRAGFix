@@ -3,10 +3,10 @@ import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { Chroma } from '@langchain/community/vectorstores/chroma';
 import { MistralAIEmbeddings } from '@langchain/mistralai';
 import fs from 'fs';
-import { CHUNK_SIZE, CHUNK_OVERLAP, PYTHON_QA_COLLECTION, JAVASCRIPT_QA_COLLECTION, MODEL } from './constants/vectore_stores';
+import { CHUNK_SIZE, CHUNK_OVERLAP, PYTHON_QA_COLLECTION, JAVASCRIPT_QA_COLLECTION, MODEL } from './constants/vector_store';
 
-PYTHON_OUTPUT_FILE = "stackoverflow_python_questions.json"
-JAVASCRIPT_OUTPUT_FILE = "stackoverflow_javascript_questions.json"
+const PYTHON_OUTPUT_FILE = "stackoverflow_python_questions.json"
+const JAVASCRIPT_OUTPUT_FILE = "stackoverflow_javascript_questions.json"
 const LANGUAGE = "python"
 const apiKey = "api-key-will-be-configured-later";
 
@@ -27,9 +27,9 @@ let qa_collection = PYTHON_QA_COLLECTION;
 
 async function main(language) {
     try {
-        const qa_threads = language==LANGUAGE ? JSON.parse(fs.readFileSync(PYTHON_OUTPUT_FILE, 'utf-8')) : JSON.parse(fs.readFileSync(JAVASCRIPT_OUTPUT_FILE, 'utf-8'));
+        const qa_threads = language===LANGUAGE ? JSON.parse(fs.readFileSync(PYTHON_OUTPUT_FILE, 'utf-8')) : JSON.parse(fs.readFileSync(JAVASCRIPT_OUTPUT_FILE, 'utf-8'));
         
-        let qa_db = await create_knowledge_base(qa_threads, qa_collection);
+       await create_knowledge_base(qa_threads, qa_collection);
         
     } catch (error) {
         console.error("Error processing JSON file:", error);
@@ -37,8 +37,8 @@ async function main(language) {
 
 
     async function create_knowledge_base(threads, collectionName) {
-        const SO_collection = threadToDocument(threads, textSplitter);
-        const documents = await processDocuments(SO_collection, textSplitter);
+        const SO_collection = threadToDocument(threads);
+        const documents = await processDocuments(SO_collection);
         const vectordb = await storeInVectorDB(documents, collectionName);
         return vectordb;
         }
@@ -84,7 +84,7 @@ function threadToDocument(threads) {
     return SO_collection;
 }
 
-async function processDocuments(documents, textSplitter) {
+async function processDocuments(documents) {
     console.log(`Splitting ${documents.length} documents...`);
     const finalDocs = [];
 
