@@ -1,0 +1,15 @@
+isort
+black
+StackAPI
+langchain 
+google-generativeai
+pandas
+requests
+dotenv
+langchain-community
+langchain-google-genai
+pinecone-client
+rank-bm25
+pinecone
+sentence-transformers
+langchain-huggingface
