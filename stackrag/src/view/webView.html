@@ -494,10 +494,10 @@ button.send {
 
 
     <div class="dropdown">
-        <button id="llmButton" onclick="toggleLLM()">Supported LLM ▾</button>
+        <button id="llmButton" onclick="toggleLLM()"></button>
         <div class="dropdown-menu" id="llmMenu">
-            <button onclick="selectLLM('mistral')">Mistral</button>
-            <button onclick="selectLLM('gemini')">Gemini</button>
+            <button onclick="selectLLM('mistral')"></button>
+            <button onclick="selectLLM('gemini')"></button>
         </div>
     </div>
 </div>
@@ -601,13 +601,6 @@ button.send {
 // ======================== INITIAL SETUP ==========================
 
 const vscode = acquireVsCodeApi();
-// const previousState = vscode.getState();
-
-// let selectedLLM = previousState?.selectedLLM || "Supported LLM";
-
-// const llmButton = document.getElementById("llmButton");
-// llmButton.innerText = selectedLLM + " ▾";
-
 let conversationHistory = [];
 let currentView = "landing"; 
 let currentDate = null;
@@ -720,7 +713,6 @@ function renderBotResponse(rawText) {
             copyBtn.type = "button";
             copyBtn.textContent = "Copy";
 
-            // ✅ robust clipboard for VS Code webview
             copyBtn.addEventListener("click", async (e) => {
                 e.stopPropagation();
 
@@ -746,20 +738,13 @@ function renderBotResponse(rawText) {
 
             container.appendChild(codeWrapper);
 
-            i++; // skip code content index
+            i++; 
         }
     }
 
     return container;
 }
 
-
-// Example: send code to backend or VS Code API
-function applySuggestedChange(updatedCode) {
-    console.log("Applying suggested code change:", updatedCode);
-    // For VS Code extension: use vscode API
-    // For web app: send fetch('/update-file', {method:'POST', body:{code: updatedCode}})
-}
 
 function formatTextBlocks(text) {
     const wrapper = document.createElement("div");
@@ -777,37 +762,14 @@ function formatTextBlocks(text) {
 
         let el;
 
-        // // ***text*** → h3
-        // if (/^\*\*\*.+\*\*\*$/.test(line)) {
-        //     el = document.createElement("h3");
-        //     el.textContent = line.slice(3, -3);
-        // }
-        // // **text** → h2
-        // else if (/^\*\*.+\*\*$/.test(line)) {
-        //     el = document.createElement("h2");
-        //     el.textContent = line.slice(2, -2);
-        // }
-        // // *text* → h1
-        // else if (/^\*[^*].+[^*]\*$/.test(line)) {
-        //     el = document.createElement("h1");
-        //     el.textContent = line.slice(1, -1);
-        // }
-        // else {
-        //     el = document.createElement("div");
-        //     el.appendChild(linkifyText(rawLine));
-        // }
-                // ***text*** → h3
         if (/^\s*\*\*\*(.+?)\*\*\*\s*$/.test(rawLine)) {
             el = document.createElement("h3");
             el.textContent = rawLine.replace(/^\s*\*\*\*(.+?)\*\*\*\s*$/, "$1");
         }
-
-        // **text** → h2
         else if (/^\s*\*\*(.+?)\*\*\s*$/.test(rawLine)) {
             el = document.createElement("h2");
             el.textContent = rawLine.replace(/^\s*\*\*(.+?)\*\*\s*$/, "$1");
         }
-        // *text* → h1
         else if (/^\s*\*([^*].+?)\*\s*$/.test(rawLine)) {
             el = document.createElement("h1");
             el.textContent = rawLine.replace(/^\s*\*([^*].+?)\*\s*$/, "$1");
@@ -874,45 +836,6 @@ document.getElementById("compareToggle")
     });
 
 
-// function selectResponse(type, button) {
-
-//     const container = button.closest(".compare-container");
-
-//     const text = type === "stackrag"
-//         ? container.querySelectorAll("p")[0].innerText
-//         : container.querySelectorAll("p")[1].innerText;
-
-//     container.remove();
-
-//     const main = document.getElementById("mainContent");
-
-//     const botMsg = document.createElement("div");
-//     botMsg.className = "message bot";
-//     // botMsg.innerText = text;
-//     botMsg.innerHTML = "";
-//     botMsg.appendChild(renderBotResponse(text));
-
-//     main.appendChild(botMsg);
-
-//     // Add to UI history
-//     conversationHistory.push({
-//         role: "assistant",
-//         content: text
-//     });
-
-//     // 🔥 Save to extension storage
-//     vscode.postMessage({
-//         type: "save_selected_response",
-//         payload: {
-//             mode: currentMode,
-//             prompt: lastUserPrompt,
-//             selectedContent: text
-//         }
-//     });
-
-//     main.scrollTop = main.scrollHeight;
-// }
-
 function selectResponse(type, button) {
 
     const container = button.closest(".compare-container");
@@ -930,7 +853,7 @@ function selectResponse(type, button) {
     const botMsg = document.createElement("div");
     botMsg.className = "message bot";
 
-    // ✅ render properly
+    // render properly
     botMsg.appendChild(renderBotResponse(text));
 
     main.appendChild(botMsg);
@@ -1019,70 +942,70 @@ function closeFilePopup() {
 
 // ======================== API SETTING POPUP ========================
 
-const apiPopup = document.getElementById("apiPopup");
-const llmButton = document.getElementById("llmButton");
-let llmMenu = document.getElementById("llmMenu");
+// const apiPopup = document.getElementById("apiPopup");
+// const llmButton = document.getElementById("llmButton");
+// let llmMenu = document.getElementById("llmMenu");
 
-function toggleLLM() {
-    const menu = document.getElementById("llmMenu");
-    menu.style.display = menu.style.display === "flex" ? "none" : "flex";
-}
+// function toggleLLM() {
+//     const menu = document.getElementById("llmMenu");
+//     menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+// }
 
 selectedLLM = "Supported LLM";
 
-function selectLLM(name) {
-    selectedLLM = name;
-    llmMenu.style.display = "none";
+// function selectLLM(name) {
+//     selectedLLM = name;
+//     llmMenu.style.display = "none";
 
-    apiPopup.style.display = "flex";
+//     apiPopup.style.display = "flex";
 
-    // Disable LLM button
-    llmButton.disabled = true;
-    llmButton.style.opacity = "0.5";
-    llmButton.style.cursor = "not-allowed";
+//     // Disable LLM button
+//     llmButton.disabled = true;
+//     llmButton.style.opacity = "0.5";
+//     llmButton.style.cursor = "not-allowed";
 
-    // Save selected LLM label
-    llmButton.innerText = selectedLLM + " ▾";
+//     // Save selected LLM label
+//     llmButton.innerText = selectedLLM + " ▾";
 
-    // vscode.setState({ selectedLLM });
-}
-
-
-// Submit API
-function submitApi() {
-    closeApiPopup();
-}
-
-function closeApiPopup() {
-    apiPopup.style.display = "none";
-
-    llmButton.disabled = false;
-    llmButton.style.opacity = "1";
-    llmButton.style.cursor = "pointer";
-}
+//     // vscode.setState({ selectedLLM });
+// }
 
 
-// Prevent click inside API popup from closing it
-apiPopup.addEventListener("click", function (event) {
-    event.stopPropagation();
-});
+// // Submit API
+// function submitApi() {
+//     closeApiPopup();
+// }
+
+// function closeApiPopup() {
+//     apiPopup.style.display = "none";
+
+//     llmButton.disabled = false;
+//     llmButton.style.opacity = "1";
+//     llmButton.style.cursor = "pointer";
+// }
+
+
+// // Prevent click inside API popup from closing it
+// apiPopup.addEventListener("click", function (event) {
+//     event.stopPropagation();
+// });
 
 // Prevent click inside LLM menu from closing
-llmMenu.addEventListener("click", function (event) {
-    event.stopPropagation();
-});
+// llmMenu.addEventListener("click", function (event) {
+//     event.stopPropagation();
+// });
 
 // Handle outside click
-document.addEventListener("click", function (event) {
-    const clickedInsideApi = apiPopup.contains(event.target);
-    const clickedInsideLLM = llmMenu.contains(event.target);
-    const clickedLLMButton = llmButton.contains(event.target);
+// document.addEventListener("click", function (event) {
+//     const clickedInsideApi = apiPopup.contains(event.target);
+//     const clickedInsideLLM = llmMenu.contains(event.target);
+//     const clickedLLMButton = llmButton.contains(event.target);
 
-    if (!clickedInsideApi && !clickedInsideLLM && !clickedLLMButton) {
-        closeApiPopup();
-        llmMenu.style.display = "none";
-    }
-});
+//     if (!clickedInsideApi && !clickedInsideLLM && !clickedLLMButton) {
+//         closeApiPopup();
+//         llmMenu.style.display = "none";
+//     }
+// });
 
 
 
@@ -1215,10 +1138,18 @@ function detectLanguageFromPrompt(prompt) {
     return "default"; 
 }
 
+function getAndClearSpecialMode(textarea) {
+  const mode = textarea.dataset.specialMode || null;
+
+  delete textarea.dataset.specialMode;
+
+  return mode;
+}
+
 function sendMessage() {
     const input = document.getElementById("chatInput");
     const modeSelect = document.getElementById("mode");
-    const specialMode = input.dataset.specialMode || null;
+    const specialMode = getAndClearSpecialMode(input);
 
     const prompt = input.value.trim();
     lastUserPrompt = prompt;
@@ -1305,46 +1236,6 @@ window.addEventListener("message", event => {
         });
     }
     
-    // if (message.type === "chat_compare_response") {
-
-    //     const main = document.getElementById("mainContent");
-
-    //     // Remove spinner
-    //     const lastBot = main.querySelector(".message.bot:last-child");
-    //     if (lastBot) lastBot.remove();
-
-    //     const container = document.createElement("div");
-    //     container.className = "compare-container";
-
-       
-    //     const stackragText = message.payload.stackrag;
-    //     const copilotText = message.payload.copilot;
-
-       
-    //     const diffHtml = generateLineDiff(stackragText, copilotText);
-
-    //     container.innerHTML = `
-    //         <div class="compare-box">
-    //             <h4>StackRAG</h4>
-    //             <p>${renderBotResponse(escapeHtml(stackragText))}</p>
-    //             <button onclick="selectResponse('stackrag', this)">Select</button>
-    //         </div>
-
-    //         <div class="compare-box">
-    //             <h4>Copilot</h4>
-    //             <p>${renderBotResponse(escapeHtml(copilotText))}</p>
-    //             <button onclick="selectResponse('copilot', this)">Select</button>
-    //         </div>
-
-    //         <div class="compare-box">
-    //             <h4>Diff</h4>
-    //             <div style="overflow:auto; font-family:monospace; font-size:12px; background:#111; padding:8px; border-radius:6px;">
-    //                 ${diffHtml}
-    //             </div>
-    //         </div>
-    //     `;
-    //     main.appendChild(container);
-    // }
 
     if (message.type === "chat_compare_response") {
 
@@ -1367,7 +1258,7 @@ window.addEventListener("message", event => {
             const box = document.createElement("div");
             box.className = "compare-box";
 
-            // 🔥 store raw text safely
+            //store raw text safely
             box.dataset.response = text;
 
             const h4 = document.createElement("h4");
@@ -1376,7 +1267,6 @@ window.addEventListener("message", event => {
             const contentWrapper = document.createElement("div");
             contentWrapper.className = "compare-render";
 
-            // ✅ USE YOUR RENDERER PROPERLY
             contentWrapper.appendChild(renderBotResponse(text));
 
             const btn = document.createElement("button");
@@ -1599,14 +1489,14 @@ function showModes(date, dayData) {
     ["Ask", "Debug", "Refactor"].forEach(mode => {
         if (!dayData[mode] || dayData[mode].length === 0) return;
 
-        // 🔹 wrapper row
+        // wrapper row
         const row = document.createElement("div");
         row.className = "suggestion";
         row.style.display = "flex";
         row.style.justifyContent = "space-between";
         row.style.alignItems = "center";
 
-        // 🔹 mode label
+        // mode label
         const label = document.createElement("span");
         label.innerText = mode;
         label.style.flex = "1";
@@ -1614,7 +1504,7 @@ function showModes(date, dayData) {
 
         label.onclick = () => openChat(date, mode, dayData[mode]);
 
-        // 🔹 delete button
+        // delete button
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "Delete";
         deleteBtn.className = "delete-btn";
@@ -1638,7 +1528,7 @@ function showModes(date, dayData) {
                 }
             });
 
-            // 🔥 instant UI update
+            // instant UI update
             row.remove();
         };
 

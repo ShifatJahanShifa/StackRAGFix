@@ -157,90 +157,87 @@ def fetch_all_questions_with_accepted_answers(site, pagesize, tag, api_key):
                 )
                 answers.extend(answers_resp.get("items", []))
 
-            # Index answers by their answer_id
             answers_by_id = {a["answer_id"]: a for a in answers}
-            # print("got answers", answers_by_id)
-
-            #
+          
 
             # Merge question with its accepted answer
-            qna_pairs = []
-            for q in accepted_qs:
-                aid = q["accepted_answer_id"]
-                accepted_answer = answers_by_id.get(aid)
-                if accepted_answer:
-                    qna_pairs.append(
-                        {
-                            "title": q["title"],
-                            "question_body": clean_html_content(q["body"]),
-                            "link": q["link"],
-                            "score": q["score"],
-                            "tags": q["tags"],
-                            "question_id": q["question_id"],
-                            "answer_count": q["answer_count"],
-                            "view_count": q["view_count"],
-                            "answers": [
-                                {
-                                    "type": "accepted",
-                                    "answer_id": accepted_answer["answer_id"],
-                                    "score": accepted_answer["score"],
-                                    "body": clean_html_content(accepted_answer["body"]),
-                                }
-                            ],
-                        }
-                    )
+            # qna_pairs = []
+            # for q in accepted_qs:
+            #     aid = q["accepted_answer_id"]
+            #     accepted_answer = answers_by_id.get(aid)
+            #     if accepted_answer:
+            #         qna_pairs.append(
+            #             {
+            #                 "title": q["title"],
+            #                 "question_body": clean_html_content(q["body"]),
+            #                 "link": q["link"],
+            #                 "score": q["score"],
+            #                 "tags": q["tags"],
+            #                 "question_id": q["question_id"],
+            #                 "answer_count": q["answer_count"],
+            #                 "view_count": q["view_count"],
+            #                 "answers": [
+            #                     {
+            #                         "type": "accepted",
+            #                         "answer_id": accepted_answer["answer_id"],
+            #                         "score": accepted_answer["score"],
+            #                         "body": clean_html_content(accepted_answer["body"]),
+            #                     }
+            #                 ],
+            #             }
+            #         )
     
             # Merge question with accepted + top-scored answer
-            # qna_pairs = []
+            qna_pairs = []
 
-            # for q in accepted_qs:
-            #     qid = q["question_id"]
-            #     aid = q["accepted_answer_id"]
+            for q in accepted_qs:
+                qid = q["question_id"]
+                aid = q["accepted_answer_id"]
 
-            #     accepted_answer = answers_by_id.get(aid)
-            #     if not accepted_answer:
-            #         continue
+                accepted_answer = answers_by_id.get(aid)
+                if not accepted_answer:
+                    continue
 
-            #     # Fetch highest scored answer (one-by-one)
-            #     top_answer = fetch_top_scored_answer(site_api, qid, site)
+                # Fetch highest scored answer (one-by-one)
+                top_answer = fetch_top_scored_answer(site_api, qid, site)
 
-            #     answers_payload = []
+                answers_payload = []
 
-            #     # Always include accepted answer
-            #     answers_payload.append({
-            #         "type": "accepted",
-            #         "answer_id": accepted_answer["answer_id"],
-            #         "score": accepted_answer["score"],
-            #         "body": clean_html_content(accepted_answer["body"]),
-            #     })
+                # Always include accepted answer
+                answers_payload.append({
+                    "type": "accepted",
+                    "answer_id": accepted_answer["answer_id"],
+                    "score": accepted_answer["score"],
+                    "body": clean_html_content(accepted_answer["body"]),
+                })
 
-            #     # Include top-scored answer if different
-            #     if top_answer and top_answer["answer_id"] != accepted_answer["answer_id"]:
-            #         answers_payload.append({
-            #             "type": "top_scored",
-            #             "answer_id": top_answer["answer_id"],
-            #             "score": top_answer["score"],
-            #             "body": clean_html_content(top_answer["body"]),
-            #         })
+                # Include top-scored answer if different
+                if top_answer and top_answer["answer_id"] != accepted_answer["answer_id"]:
+                    answers_payload.append({
+                        "type": "top_scored",
+                        "answer_id": top_answer["answer_id"],
+                        "score": top_answer["score"],
+                        "body": clean_html_content(top_answer["body"]),
+                    })
 
-            #     qna_pairs.append(
-            #         {
-            #             "title": q["title"],
-            #             "question_body": clean_html_content(q["body"]),
-            #             "link": q["link"],
-            #             "score": q["score"],
-            #             "tags": q["tags"],
-            #             "question_id": qid,
-            #             "answer_count": q["answer_count"],
-            #             "view_count": q["view_count"],
-            #             "answers": answers_payload,
-            #         }
-            #     )
+                qna_pairs.append(
+                    {
+                        "title": q["title"],
+                        "question_body": clean_html_content(q["body"]),
+                        "link": q["link"],
+                        "score": q["score"],
+                        "tags": q["tags"],
+                        "question_id": qid,
+                        "answer_count": q["answer_count"],
+                        "view_count": q["view_count"],
+                        "answers": answers_payload,
+                    }
+                )
 
-            #     print("appended one...")
+                print("appended one...")
 
-            #     # small polite delay to reduce rate-limit pressure
-            #     time.sleep(0.2)
+                # small polite delay to reduce rate-limit pressure
+                time.sleep(0.2)
 
             if tag == PYTHON_TAG:
                 save_questions(qna_pairs, PYTHON_OUTPUT_FILE)
@@ -273,7 +270,7 @@ def fetch_all_questions_with_accepted_answers(site, pagesize, tag, api_key):
             print("Sleeping 60s before retrying…")
             time.sleep(60)
 
-    print(f"\n🎯 Finished. Total questions fetched: {total}")
+    print(f"\n Finished. Total questions fetched: {total}")
 
 # TODO: fetch_all_questions_with_no_accepted_answers
 

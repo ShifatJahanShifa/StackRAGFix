@@ -4,7 +4,7 @@ import * as fs from "fs";
 import fetch from "node-fetch";
 import { indexWorkspace, deleteExistingCollection } from "../indexing/indexService";
 import { retrieveRelevantCode } from "../indexing/indexService";
-
+// hosted url: https://shifa1301-stackrag-backend.hf.space
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "ragChatView";
@@ -45,17 +45,8 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     vscode.Uri.joinPath(this.extensionUri, "media", "codebase.svg")
   );
 
-  //   const prismJsUri = webviewView.webview.asWebviewUri(
-  //   vscode.Uri.joinPath(this.extensionUri, "media", "prism.js")
-  // );
-
-  // const prismCssUri = webviewView.webview.asWebviewUri(
-  //   vscode.Uri.joinPath(this.extensionUri, "media", "prism.css")
-  // );
-
   const lastTime = this.context.workspaceState.get("lastIndexedTime");
 
-  // may be need to handle this in the UI
   webviewView.webview.postMessage({
       type: "initial_index_state",
       payload: { lastIndexedTime: lastTime }
@@ -86,14 +77,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     "{{CODEBASE_ICON}}",
     codebaseSummaryIconUri.toString()
   );
-  // htmlContent = htmlContent.replace(
-  //   "{{PRISM_JS}}",
-  //   prismJsUri.toString()
-  // );
-  // htmlContent = htmlContent.replace(
-  //   "{{PRISM_CSS}}",
-  //   prismCssUri.toString()
-  // );
+  
   htmlContent = htmlContent.replace(
     "{{cspSource}}",
     webviewView.webview.cspSource
@@ -116,7 +100,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       // Trim history here
       const MAX_MESSAGES = 1;
       const trimmedHistory = history.slice(-MAX_MESSAGES); 
-      console.log("DEBUG: trimmedHistory", trimmedHistory);// will add this to the request payload
+      console.log("DEBUG: trimmedHistory", trimmedHistory);
       const editor = vscode.window.activeTextEditor;
 
       let currentFileContent = "";
@@ -127,15 +111,12 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
       const editorLanguage = editor?.document.languageId;
 
-      // If UI detected something specific → trust it
       if (language !== "default") {
         finalLanguage = language;
       }
-      // If UI sent default → use active editor language
       else if (editorLanguage) {
         finalLanguage = editorLanguage;
       }
-      // Ultimate fallback
       else {
         finalLanguage = "python";
       }
@@ -155,7 +136,6 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
       console.log("DEBUG: currentFileContent", currentFileContent);
 
-      // to limit the context to 8000 characters
       const MAX_FILE_CHARS = 8000;
       currentFileContent = currentFileContent.slice(0, MAX_FILE_CHARS);
 
@@ -357,13 +337,6 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       console.log("DEBUG: rootPath", rootPath)
 
       try {
-
-          // await indexWorkspace(rootPath, (current, total) => {
-          //     webviewView.webview.postMessage({
-          //         type: "index_progress",
-          //         payload: { current, total }
-          //     });
-          // });
           const totalIndexed = await indexWorkspace(rootPath, (current, total) => {
               webviewView.webview.postMessage({
                   type: "index_progress",
@@ -400,10 +373,10 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       const rootPath = workspaceFolder.uri.fsPath;
 
       try {
-        // 🔥 step 1: delete
+        // step 1: delete
         await deleteExistingCollection(rootPath);
 
-        // 🔥 step 2: reindex immediately
+        // step 2: reindex immediately
         await indexWorkspace(rootPath, (current, total) => {
           webviewView.webview.postMessage({
             type: "index_progress",
@@ -493,26 +466,25 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
 
     if (message.type === "delete_mode_history") {
-  const { date, mode } = message.payload;
+      const { date, mode } = message.payload;
 
-  const history = this.context.workspaceState.get<any>("chatHistory", {});
+      const history = this.context.workspaceState.get<any>("chatHistory", {});
 
-  if (history[date] && history[date][mode]) {
-    delete history[date][mode];
+      if (history[date] && history[date][mode]) {
+        delete history[date][mode];
 
-    // 🔥 cleanup empty date
-    if (Object.keys(history[date]).length === 0) {
-      delete history[date];
+        if (Object.keys(history[date]).length === 0) {
+          delete history[date];
+        }
+
+        await this.context.workspaceState.update("chatHistory", history);
+      }
+
+      webviewView.webview.postMessage({
+        type: "history_data",
+        payload: history
+      });
     }
-
-    await this.context.workspaceState.update("chatHistory", history);
-  }
-
-  webviewView.webview.postMessage({
-    type: "history_data",
-    payload: history
-  });
-}
     
   });
 }

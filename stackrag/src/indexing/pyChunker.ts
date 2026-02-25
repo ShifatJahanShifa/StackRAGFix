@@ -83,7 +83,7 @@ async function splitPythonCode(filePath: string, fileContent: string): Promise<{
 
         // Detect function definitions
         if (/^\s*def\s+\w+/.test(line)) {
-            // Flush any standalone statements before the function
+           
             if (standaloneChunk.length > 0) {
                 flushStandaloneChunk(i - 1);
             }
@@ -96,7 +96,6 @@ async function splitPythonCode(filePath: string, fileContent: string): Promise<{
             continue;
         }
 
-        // Check if we're still in a function
         if (inFunction) {
             const lineIndentation = line.length - line.trimStart().length;
             if (lineIndentation > currentIndentation) {
@@ -110,7 +109,7 @@ async function splitPythonCode(filePath: string, fileContent: string): Promise<{
                 }
             }
         } else {
-            // Collect standalone statements
+            
             if (trimmedLine && !/^\s*def\s+\w+/.test(line)) {
                 if (standaloneChunk.length === 0) {
                     startLine = i;

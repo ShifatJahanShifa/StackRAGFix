@@ -2,9 +2,7 @@ import * as esprima from "esprima";
 import { promises as fsPromises } from "fs";
 import * as path from "path";
 
-// ---------------------------------------------
-// 1. Find all JS files (same as findPythonFiles)
-// ---------------------------------------------
+
 export async function findJsFiles(rootDir: string): Promise<string[]> {
     const jsFiles: string[] = [];
 
@@ -26,9 +24,6 @@ export async function findJsFiles(rootDir: string): Promise<string[]> {
     return jsFiles;
 }
 
-// -------------------------------------------------------
-// 2. Split JS into chunks: functions + top-level statements
-// -------------------------------------------------------
 async function splitJsCode(filePath: string, code: string) {
     const ast = esprima.parseScript(code, { range: true, loc: true });
 
@@ -100,9 +95,6 @@ async function splitJsCode(filePath: string, code: string) {
     return chunks;
 }
 
-// -----------------------------------------------------------
-// 3. Read files concurrently and generate unified chunk result
-// -----------------------------------------------------------
 async function readJsFilesConcurrently(jsFiles: string[]) {
     let totalCharacters = 0;
     let maxChars = 0;
@@ -143,13 +135,7 @@ async function readJsFilesConcurrently(jsFiles: string[]) {
     return { totalCharacters, maxChars, chunks };
 }
 
-// -----------------------------
-// 4. Main function → JSON dump
-// -----------------------------
-// return: 
-/*
-Array<{ content, metadata }>
-*/
+
 export async function processJsFiles(rootDir: string) {
     const jsFiles = await findJsFiles(rootDir);
     console.log(`Found ${jsFiles.length} JS files.`);
