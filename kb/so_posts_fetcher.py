@@ -33,7 +33,6 @@ def clean_html_content(html_text):
     for element in soup.descendants:
         if isinstance(element, NavigableString):
             if element.parent.name == "code":
-                # Preserve code block content
                 decoded = html.unescape(str(element))
                 cleaned.append(f"<code>{decoded}</code>")
             elif element.parent.name not in ["code", "[document]"]:
@@ -74,13 +73,30 @@ def save_questions(data, output_file):
 
 
 def chunk_list(lst, n):
-    """Yield successive n-sized chunks from lst."""
+    """Yield successive n-sized chunks from list."""
     for i in range(0, len(lst), n):
         yield lst[i : i + n]
 
 
-def fetch_all_answered_questions(site, pagesize, tag, api_key):
-    """Continuously fetch all questions that have at least one answer."""
+def fetch_top_scored_answer(site_api, question_id, site):
+    """
+    Fetch highest-scored answer for a single question.
+    """
+    resp = site_api.fetch(
+        f"questions/{question_id}/answers",
+        filter="withbody",
+        sort="votes",
+        order="desc",
+        pagesize=1,
+        site=site,
+    )
+
+    items = resp.get("items", [])
+    return items[0] if items else None
+
+
+def fetch_all_questions_with_accepted_answers(site, pagesize, tag, api_key):
+    """Continuously fetch all questions that have at least one accepted answer."""
 
     site_api = StackAPI(site, key=api_key)
     site_api.page_size = pagesize
@@ -126,15 +142,6 @@ def fetch_all_answered_questions(site, pagesize, tag, api_key):
             accepted_answer_ids = [q["accepted_answer_id"] for q in accepted_qs]
 
             print(f"Fetching {len(accepted_answer_ids)} accepted answers...")
-            # for i in range()
-            # answers_resp = site_api.fetch(
-            #     f"questions/{';'.join(map(str, accepted_answer_ids))}/answers",
-            #     filter="withbody",
-            #     sort="votes",
-            #     order="desc",
-            #     site=site
-            # )
-            # answers = answers_resp.get("items", [])
 
             answers = []
 
@@ -152,10 +159,9 @@ def fetch_all_answered_questions(site, pagesize, tag, api_key):
 
             # Index answers by their answer_id
             answers_by_id = {a["answer_id"]: a for a in answers}
-            print("got answrrs", answers_by_id)
+            # print("got answers", answers_by_id)
 
-            # # Index answers by their answer_id
-            # answers_by_id = {a["answer_id"]: a for a in answers}
+            #
 
             # Merge question with its accepted answer
             qna_pairs = []
@@ -175,16 +181,66 @@ def fetch_all_answered_questions(site, pagesize, tag, api_key):
                             "view_count": q["view_count"],
                             "answers": [
                                 {
+                                    "type": "accepted",
+                                    "answer_id": accepted_answer["answer_id"],
                                     "score": accepted_answer["score"],
                                     "body": clean_html_content(accepted_answer["body"]),
                                 }
                             ],
                         }
                     )
-                    # qna_pairs["answers"].append({
-                    #     "score": accepted_answer["score"],
-                    #     "body": clean_html_content(accepted_answer["body"])
-                    # })
+    
+            # Merge question with accepted + top-scored answer
+            # qna_pairs = []
+
+            # for q in accepted_qs:
+            #     qid = q["question_id"]
+            #     aid = q["accepted_answer_id"]
+
+            #     accepted_answer = answers_by_id.get(aid)
+            #     if not accepted_answer:
+            #         continue
+
+            #     # Fetch highest scored answer (one-by-one)
+            #     top_answer = fetch_top_scored_answer(site_api, qid, site)
+
+            #     answers_payload = []
+
+            #     # Always include accepted answer
+            #     answers_payload.append({
+            #         "type": "accepted",
+            #         "answer_id": accepted_answer["answer_id"],
+            #         "score": accepted_answer["score"],
+            #         "body": clean_html_content(accepted_answer["body"]),
+            #     })
+
+            #     # Include top-scored answer if different
+            #     if top_answer and top_answer["answer_id"] != accepted_answer["answer_id"]:
+            #         answers_payload.append({
+            #             "type": "top_scored",
+            #             "answer_id": top_answer["answer_id"],
+            #             "score": top_answer["score"],
+            #             "body": clean_html_content(top_answer["body"]),
+            #         })
+
+            #     qna_pairs.append(
+            #         {
+            #             "title": q["title"],
+            #             "question_body": clean_html_content(q["body"]),
+            #             "link": q["link"],
+            #             "score": q["score"],
+            #             "tags": q["tags"],
+            #             "question_id": qid,
+            #             "answer_count": q["answer_count"],
+            #             "view_count": q["view_count"],
+            #             "answers": answers_payload,
+            #         }
+            #     )
+
+            #     print("appended one...")
+
+            #     # small polite delay to reduce rate-limit pressure
+            #     time.sleep(0.2)
 
             if tag == PYTHON_TAG:
                 save_questions(qna_pairs, PYTHON_OUTPUT_FILE)
@@ -219,9 +275,10 @@ def fetch_all_answered_questions(site, pagesize, tag, api_key):
 
     print(f"\n🎯 Finished. Total questions fetched: {total}")
 
+# TODO: fetch_all_questions_with_no_accepted_answers
 
 # TODO: tagged should switch between two values. python and javascript
 if __name__ == "__main__":
-    fetch_all_answered_questions(
-        site=SITE, pagesize=100, tag=PYTHON_TAG, api_key=STACK_EXCHANGE_API_KEY
+    fetch_all_questions_with_accepted_answers(
+        site=SITE, pagesize=100, tag=JAVASCRIPT_TAG, api_key=STACK_EXCHANGE_API_KEY
     )

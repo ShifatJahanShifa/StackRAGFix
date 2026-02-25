@@ -10,8 +10,6 @@ class CustomEnsembleRetriever:
 
         # Step 1: Retrieve from each retriever
         for retriever, weight in zip(self.retrievers, self.weights):
-            # BM25 retriever → has get_relevant_documents
-            # Vector retriever → may have invoke (LangChain retrievers often do)
             if hasattr(retriever, "get_relevant_documents"):
                 docs = retriever.get_relevant_documents(query)
             elif hasattr(retriever, "invoke"):
@@ -27,7 +25,7 @@ class CustomEnsembleRetriever:
         # Step 2: Combine duplicate documents with weighted scores
         combined = {}
         for doc, weight in all_docs:
-            doc_id = doc.page_content.strip()  # could also use hash(doc.page_content)
+            doc_id = doc.page_content.strip()
             if doc_id not in combined:
                 combined[doc_id] = {"doc": doc, "score": 0}
             combined[doc_id]["score"] += weight

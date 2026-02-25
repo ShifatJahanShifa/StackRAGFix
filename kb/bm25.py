@@ -5,11 +5,11 @@ from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents.base import Document
 
 from constants.collections import JAVASCRIPT_QA_COLLECTION, PYTHON_QA_COLLECTION
-from constants.files import PICKLE_PATH
+from constants.files import PY_PICKLE_PATH, JS_PICKLE_PATH
 
 
 def build_and_save_bm25(collection_name):
-    client = chromadb.HttpClient(host="localhost", port=9000, ssl=False)
+    client = chromadb.HttpClient(host="localhost", port=8000, ssl=False)
 
     # Load full Chroma collection
     print("Loading Chroma collection...")
@@ -34,10 +34,10 @@ def build_and_save_bm25(collection_name):
     bm25_retriever.k = 5
 
     # Save to pickle
-    with open(PICKLE_PATH, "wb") as f:
+    with open(JS_PICKLE_PATH, "wb") as f:
         pickle.dump(bm25_retriever, f)
 
-    print(f"BM25 retriever saved to {PICKLE_PATH}")
+    print(f"BM25 retriever saved to {JS_PICKLE_PATH}")
 
 
-build_and_save_bm25(PYTHON_QA_COLLECTION)
+build_and_save_bm25(JAVASCRIPT_QA_COLLECTION)

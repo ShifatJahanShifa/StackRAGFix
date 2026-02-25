@@ -3,12 +3,13 @@ import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { Chroma } from '@langchain/community/vectorstores/chroma';
 import { MistralAIEmbeddings } from '@langchain/mistralai';
 import fs from 'fs';
-import { CHUNK_SIZE, CHUNK_OVERLAP, PYTHON_QA_COLLECTION, JAVASCRIPT_QA_COLLECTION, MODEL } from './constants/vector_store';
+import { CHUNK_SIZE, CHUNK_OVERLAP, PYTHON_QA_COLLECTION, JAVASCRIPT_QA_COLLECTION, MODEL } from './constants/vector_store.js';
 
 const PYTHON_OUTPUT_FILE = "stackoverflow_python_questions.json"
 const JAVASCRIPT_OUTPUT_FILE = "stackoverflow_javascript_questions.json"
 const LANGUAGE = "python"
-const apiKey = "api-key-will-be-configured-later";
+// const apiKey = "api-key-will-be-configured-later";
+const apiKey = "JNzByShaThRYBs72cz4Z8RwB0LMtHm06"
 
 const textSplitter = new RecursiveCharacterTextSplitter({
   chunkSize: CHUNK_SIZE,
@@ -22,8 +23,8 @@ const embeddings = new MistralAIEmbeddings({
 });
 
 // TODO: switch the collection between python and javascript.
-let qa_collection = PYTHON_QA_COLLECTION;
-
+// let qa_collection = PYTHON_QA_COLLECTION;
+let qa_collection = JAVASCRIPT_QA_COLLECTION;
 
 async function main(language) {
     try {
@@ -41,7 +42,7 @@ async function main(language) {
         const documents = await processDocuments(SO_collection);
         const vectordb = await storeInVectorDB(documents, collectionName);
         return vectordb;
-        }
+    }
 }
 
 function threadToDocument(threads) {
@@ -90,10 +91,10 @@ async function processDocuments(documents) {
 
     for (const doc of documents) {
         try {
-        const splitDocs = await textSplitter.splitDocuments([doc]);
-        finalDocs.push(...splitDocs);
+            const splitDocs = await textSplitter.splitDocuments([doc]);
+            finalDocs.push(...splitDocs);
         } catch (error) {
-        console.error("Error splitting document:", error.message);
+            console.error("Error splitting document:", error.message);
         }
     }
 
@@ -110,7 +111,7 @@ async function storeInVectorDB(finalDocs, collectionName) {
         let vectorStore = await Chroma.fromDocuments(initDocs, embeddings, {
             collectionName: collectionName,
             host: "localhost",
-            port: 9000,
+            port: 8000,
             ssl: false,
             collectionMetadata: {
                 "hnsw:space": "cosine",
@@ -119,44 +120,42 @@ async function storeInVectorDB(finalDocs, collectionName) {
 
         const remainingDocs = finalDocs.slice(1);
         const batchSize = 200;
-        console.log(
-        `Processing ${remainingDocs.length} remaining documents in batches of ${batchSize}...`
-        );
+        console.log(`Processing ${remainingDocs.length} remaining documents in batches of ${batchSize}...`);
 
         for (let i = 0; i < remainingDocs.length; i += batchSize) {
-        try {
-            const batch = remainingDocs.slice(i, i + batchSize);
-            console.log(
-            `Processing batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(
-                remainingDocs.length / batchSize
-            )}`
-            );
-
-            await vectorStore.addDocuments(batch);
-            console.log(`Processed batch of ${batch.length} documents`);
-        } catch (batchError) {
-            console.error(`Error processing batch: ${batchError.message}`);
-            console.log("Falling back to processing one document at a time...");
-
-            const batchStart = i;
-            const batchEnd = Math.min(i + batchSize, remainingDocs.length);
-
-            for (let j = batchStart; j < batchEnd; j++) {
             try {
-                await vectorStore.addDocuments([remainingDocs[j]]);
+                const batch = remainingDocs.slice(i, i + batchSize);
                 console.log(
-                `Processed document ${j + 1} of ${remainingDocs.length}`
+                `Processing batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(
+                    remainingDocs.length / batchSize
+                )}`
                 );
-            } catch (docError) {
-                console.error(
-                `Could not process document ${j + 1}: ${docError.message}`
-                );
-            }
-            }
-        }
 
-        // Add a small delay between batches to avoid rate limiting
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+                await vectorStore.addDocuments(batch);
+                console.log(`Processed batch of ${batch.length} documents`);
+            } catch (batchError) {
+                console.error(`Error processing batch: ${batchError.message}`);
+                console.log("Falling back to processing one document at a time...");
+
+                const batchStart = i;
+                const batchEnd = Math.min(i + batchSize, remainingDocs.length);
+
+                for (let j = batchStart; j < batchEnd; j++) {
+                    try {
+                        await vectorStore.addDocuments([remainingDocs[j]]);
+                        console.log(
+                        `Processed document ${j + 1} of ${remainingDocs.length}`
+                        );
+                    } catch (docError) {
+                        console.error(
+                        `Could not process document ${j + 1}: ${docError.message}`
+                        );
+                    }
+                }
+            }
+
+            // Add a small delay between batches to avoid rate limiting
+            await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
         console.log("Successfully stored all documents in ChromaDB");
@@ -166,4 +165,5 @@ async function storeInVectorDB(finalDocs, collectionName) {
         throw error;
     }
 }
-main("python");
+
+main("javascript");

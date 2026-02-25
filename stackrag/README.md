@@ -1,71 +1,183 @@
-# stackrag README
+# StackRAG — Intelligent Code Assistant for VS Code
 
-This is the README for your extension "stackrag". After writing up a brief description, we recommend including the following sections.
+StackRAG is a **Retrieval-Augmented Generation (RAG)** powered VS Code extension that helps developers understand, debug, and improve their code using real-world knowledge from Stack Overflow and their own codebase.
 
-## Features
+It combines:
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+* 🔍 Codebase-aware retrieval
+* 🧠 Stack Overflow knowledge
+* 🤖 LLM-powered reasoning
+* ⚡ Fast hybrid search
 
 ---
 
-## Following extension guidelines
+## ✨ Features
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+### 🧩 Codebase Understanding
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+* Automatically indexes your workspace
+* Language-aware chunking for Python and JavaScript
+* Semantic code search across your project
 
-## Working with Markdown
+### 🐛 Intelligent Bug Fixing
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+* Detects issues in your code
+* Suggests fixes with explanations
+* Uses real Stack Overflow solutions as evidence
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+### ♻️ Smart Refactoring
 
-## For more information
+* Improves code quality and structure
+* Applies best-practice patterns
+* Maintains original functionality
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+### 🔎 Hybrid Retrieval
 
-**Enjoy!**
+* BM25 + Vector search ensemble
+* Context-aware ranking
+* High-quality relevant results
+
+---
+
+## 🛠️ Supported Languages
+
+* ✅ Python
+* ✅ JavaScript
+
+(More languages coming soon)
+
+---
+
+## 📦 Installation
+
+1. Install from the VS Code Marketplace
+2. Reload VS Code
+3. Configure your API key (see below)
+
+---
+
+## 🔑 Required Setup
+
+StackRAG requires your own **Mistral API key**.
+
+### Step 1 — Open VS Code Settings
+
+Search for:
+
+```
+StackRAG: Mistral Api Key
+StackRAG: Qdrant Cluster Endpoint
+StackRAG: Qdrant Api Key
+```
+
+### Step 2 — Paste your key
+
+Or add to `settings.json`:
+
+```json
+{
+  "stackrag.mistralApiKey": "your-api-key-here",
+  "stackrag.qdrantClusterEndpoint": "provide the endpoint",
+  "stackrag.qdrantApiKey": "your-qdrant-api-key"
+}
+```
+
+⚠️ Your key is stored locally and never uploaded.
+
+---
+
+## 🚀 How to Use
+
+### 1️⃣ Index Your Workspace
+
+* Open Command Palette
+* Run:
+
+```
+StackRAG: Index Workspace
+```
+
+This builds the semantic code index.
+
+---
+
+### 2️⃣ Ask Questions
+
+Use the StackRAG panel to:
+
+* Explain code
+* Fix bugs
+* Refactor functions
+* Search relevant patterns
+
+---
+
+### 3️⃣ Bug Fixing
+
+Provide:
+
+* Bug description
+* Code snippet
+* Optional related files
+
+StackRAG will generate:
+
+* ✅ Fixed code
+* ✅ Explanation
+* ✅ Supporting evidence
+
+---
+
+## 🧠 How It Works (High Level)
+
+StackRAG uses a multi-stage RAG pipeline:
+
+1. Workspace code chunking
+2. Stack Overflow knowledge retrieval
+3. Hybrid search (BM25 + vector)
+4. LLM reasoning with context
+
+This produces grounded, high-quality answers.
+
+---
+
+## 🔒 Privacy & Security
+
+* Your code stays local
+* No automatic uploads
+* API key stored in VS Code settings
+* You control all indexing
+
+---
+
+## 🐞 Known Limitations
+
+* Large repositories may take time to index
+* Currently optimized for Python and JavaScript
+* Requires user-provided API key
+
+---
+
+## 🗺️ Roadmap
+
+* More language support
+* Smarter repository summarization
+* Improved ranking
+* Streaming responses
+* UI enhancements
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
+---
+
+## ⭐ Support
+
+If you find StackRAG helpful, consider giving it a star on GitHub!
+
+---
+
+**Built to make code understanding faster and smarter.**
