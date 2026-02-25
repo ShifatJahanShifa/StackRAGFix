@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Content-Security-Policy"
+content="
+    default-src 'none';
+    img-src https: data: {{cspSource}};
+    style-src 'unsafe-inline' {{cspSource}};
+    script-src 'unsafe-inline' {{cspSource}};
+">
+<!-- <link href="{{PRISM_CSS}}" rel="stylesheet" />
+<script src="{{PRISM_JS}}"></script> -->
+<title>StackRAG</title>
+
+<style>
+
+/* ================= GLOBAL(BODY) ================= */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background-color: #091821c7;
+    color: #d4d4d4;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ================= HEADER ================= */
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid #333;
+    font-size: 13px;
+}
+
+.header button {
+    background: none;
+    border: none;
+    color: #9cdcfe;
+    cursor: pointer;
+}
+
+.header button:hover {
+    color: whitesmoke;
+}
+
+/* Dropdown */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 25px;
+    right: 0;
+    background: #062d42;
+    border: 1px solid #06324a;
+    border-radius: 6px;
+    padding: 8px;
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    width: 120px;
+}
+
+.dropdown-menu button {
+    background: none;
+    border: none;
+    text-align: left;
+    color: #d4d4d4;
+    cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+    color: white;
+}
+
+/* API Popup */
+.api-popup {
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    background: #062d42;
+    border: 1px solid #06324a;
+    padding: 10px;
+    border-radius: 8px;
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    width: 200px;
+}
+
+.api-popup input {
+    padding: 5px;
+    background: #1e1e1e;
+    border: 1px solid #444;
+    color: whitesmoke;
+    border-radius: 4px;
+}
+
+/* ================= MAIN ================= */
+
+.main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Landing */
+.landing {
+    margin: auto;
+    text-align: center;
+}
+
+.landing h1 {
+    font-size: 20px;
+}
+
+.landing p {
+    color: #888;
+}
+
+.suggestion {
+    margin-top: 12px;
+    padding: 8px;
+    background: #062d42;
+    border: 1px solid #06324a;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.suggestion:hover {
+    background: #333;
+}
+
+/* Chat messages */
+
+.message {
+    margin-bottom: 12px;
+}
+
+.message.user {
+    text-align: right;
+}
+
+.message.bot {
+    text-align: left;
+}
+
+.code-block {
+    background: #252526;
+    padding: 14px 12px 12px 12px;
+    border-radius: 6px;
+    font-family: monospace;
+    position: relative;
+    margin: 12px 0;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #9cdcfe;
+    background: transparent;
+    border: 1px solid rgba(156, 220, 254, 0.4);
+    border-radius: 4px;
+    padding: 2px 6px;
+    z-index: 10;
+}
+
+.copy-btn:hover {
+    background: rgba(156, 220, 254, 0.12);
+}
+
+.code-block pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.code-lang {
+    font-size: 11px;
+    color: #9cdcfe;
+    margin-bottom: 4px;
+    opacity: 0.8;
+}
+
+.message.bot h1,
+.message.bot h2,
+.message.bot h3 {
+    margin: 6px 0;
+    color: #9cdcfe;
+}
+
+/* ================= INPUT BAR ================= */
+
+.input-bar {
+    border-top: 1px solid #333;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* new addition ------ */
+.input-bar textarea {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #082433;
+    color: whitesmoke;
+
+    min-height: 50px;     /* initial height */
+    max-height: 150px;    /* growth limit */
+    resize: none;         /* disable manual resizing */
+    overflow-y: hidden;   /* JS will control scroll */
+    box-sizing: border-box;
+    line-height: 1.4;
+}
+
+/* extraaa */
+
+.input-bar textarea::-webkit-scrollbar {
+    width: 6px;
+}
+
+.input-bar textarea::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 3px;
+}
+
+.input-bar textarea::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+
+/* Bottom options row */
+.bottom-options {
+    margin-top: 6px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.left-options,
+.right-options {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.left-options #mode {
+    background-color: #0a415f;
+    color: whitesmoke;
+}
+
+button.small {
+    background: none;
+    border: none;
+    color: #9cdcfe;
+    cursor: pointer;
+}
+
+button.send {
+    background: #0a415f;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: whitesmoke;
+}
+
+/* ================= INDEX POPUP ================= */
+
+.index-popup {
+    position: absolute;
+    bottom: 100px;
+    right: 12px;
+
+    background: #062d42;
+    border: 1px solid #06324a;
+
+    padding: 18px;
+    border-radius: 12px;
+
+    width: 200px;          /* slightly wider */
+    min-height: 60px;     /* slightly taller */
+
+    display: none;
+    text-align: left;
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Content layout */
+#indexContent {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;   /* increases spacing between elements */
+    font-size: 13px;
+}
+
+/* Checkbox label */
+#indexContent label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+/* Reindex button */
+#indexContent button {
+    align-self: flex-start;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background: #0a415f;
+    color: whitesmoke;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#indexContent button:hover {
+    background: #005fa3;
+}
+
+.index-btn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.curr-file-btn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.add-file-btn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.btn-icon {
+    width: 14px;
+    height: 14px;
+    color: #d2dfe8;
+}
+
+.blur {
+    filter: blur(4px);
+    pointer-events: none;
+    user-select: none;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 3px solid #444;
+    border-top: 3px solid #9cdcfe;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-top: 4px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+.popup {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    background: #0a2d3f;
+    padding: 20px;
+    width: 400px;
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 8px;
+}
+
+.popup-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.compare-container {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+/* .compare-box {
+    flex: 1;
+    background: #1e1e1e;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+} */
+
+.compare-box {
+    flex: 1 1 0;        /* 🔥 change from flex:1 */
+    min-width: 0;       /* 🔥 CRITICAL for equal width */
+    background: #1e1e1e;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+}
+
+.compare-box h4 {
+    margin-top: 0;
+    font-size: 13px;
+    color: #9cdcfe;
+}
+
+.compare-box pre {
+    flex: 1;
+    overflow: auto;
+    font-family: monospace;
+    font-size: 12px;
+    background: #111;
+    padding: 8px;
+    border-radius: 6px;
+    min-width: 0;
+}
+
+.compare-render {
+    min-width: 0;
+    overflow: auto;
+}
+
+/* Diff styling */
+.diff-added {
+    background-color: #123d1f;
+    color: #4caf50;
+}
+
+.diff-removed {
+    background-color: #3a1a1a;
+    color: #ff6b6b;
+}
+
+.diff-same {
+    background-color: transparent;
+    color: #ccc;
+}
+
+.comparison-text {
+    display: flex;
+    gap: 2px; 
+    flex-direction: row;
+    font-size: 12px;
+    align-items: center;
+    color: #9cdcfe; 
+}
+
+.delete-btn {
+    font-size: 12px;
+    padding: 2px 6px;
+    color: whitesmoke;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<div class="header">
+    <button onclick="loadHistory()">See Previous Interaction</button>
+
+
+    <div class="dropdown">
+        <button id="llmButton" onclick="toggleLLM()">Supported LLM ▾</button>
+        <div class="dropdown-menu" id="llmMenu">
+            <button onclick="selectLLM('mistral')">Mistral</button>
+            <button onclick="selectLLM('gemini')">Gemini</button>
+        </div>
+    </div>
+</div>
+
+<div class="api-popup" id="apiPopup">
+    <div>Enter API Key</div>
+    <input type="text" placeholder="API Key" />
+
+    <div style="display:flex; gap:6px; margin-top:6px;">
+        <button class="send" onclick="submitApi()">Submit</button>
+        <button class="small" onclick="closeApiPopup()">Cancel</button>
+    </div>
+</div>
+
+
+<!-- ================= MAIN ================= -->
+
+<div class="main" id="mainContent">
+
+    <div class="landing" id="landing">
+        <h1>Welcome to StackRAG</h1>
+        <p>You can start by asking...</p>
+
+        <div class="suggestion">How to write tuple in Python?</div>
+        <div class="suggestion">How to write strict mode in JavaScript?</div>
+    </div>
+
+</div>
+
+<!-- ================= INPUT BAR ================= -->
+
+<div class="input-bar">
+
+    <textarea id="chatInput" placeholder="Ask something..." ></textarea>
+
+    <div class="bottom-options">
+        <div class="left-options">
+            <select id="mode">
+                <option>Ask</option>
+                <option>Debug</option>
+                <option>Refactor</option>
+            </select>
+
+            <!-- need to add actions here -->
+            <label class="comparison-text">
+                <input type="checkbox" id="compareToggle"/>
+                Enable Comparison with Copilot
+            </label>
+
+        </div>
+
+        <div class="right-options">
+            <!-- <button class="small" onclick="toggleIndex()">Index</button> -->
+            <button class="small index-btn" onclick="toggleIndex(event)">
+                <img src="{{DATABASE_ICON}}" class="btn-icon" />
+                <span>Index</span>
+            </button>
+            <button class="small add-file-btn" onclick="openFileContextPopup()">
+                <img src="{{ADD_CONTEXT_ICON}}" class="btn-icon" />
+                <span>Add File Context</span> 
+            </button>
+            <button  id="codebaseSummaryBtn" class="small curr-file-btn">
+                <img src="{{CODEBASE_ICON}}" class="btn-icon" />
+                <span>Codebase Summary</span> 
+            </button>
+            
+
+            <button class="send" onclick="sendMessage()">Send</button>
+        </div>
+
+    </div>
+</div>
+
+<div class="index-popup" id="indexPopup">
+    <div id="indexContent">
+        <label>
+            <input type="checkbox" onchange="startIndexing()" />
+            Enable Indexing
+        </label>
+    </div>
+</div>
+
+<!-- add file context -->
+<div id="fileContextPopup" class="popup">
+    <div class="popup-content">
+        <h3>Select Files for Context</h3>
+        <div id="fileList"></div>
+
+        <div class="popup-actions">
+            <button class="send" onclick="confirmFileSelection()">Add</button>
+            <button class="send" onclick="closeFilePopup()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- the logical part -->
+
+<script>
+// ======================== INITIAL SETUP ==========================
+
+const vscode = acquireVsCodeApi();
+// const previousState = vscode.getState();
+
+// let selectedLLM = previousState?.selectedLLM || "Supported LLM";
+
+// const llmButton = document.getElementById("llmButton");
+// llmButton.innerText = selectedLLM + " ▾";
+
+let conversationHistory = [];
+let currentView = "landing"; 
+let currentDate = null;
+let currentMode = "Ask";
+let workspaceFiles = [];
+let selectedWorkspaceFiles = [];
+let compareEnabled = false;
+let lastUserPrompt = "";
+let fullHistoryCache = {};
+
+
+// ============================ MODE SELECTION ================
+const modeSelect = document.getElementById("mode");
+
+modeSelect.addEventListener("change", () => {
+    const selected = modeSelect.value;
+
+    if (selected === "Debug" || selected === "Refactor") {
+        // Create popup overlay
+        const popup = document.createElement("div");
+        popup.className = "popup-overlay";
+        popup.style.position = "fixed";
+        popup.style.top = 0;
+        popup.style.left = 0;
+        popup.style.width = "100%";
+        popup.style.height = "100%";
+        popup.style.backgroundColor = "rgba(0,0,0,0.5)";
+        popup.style.display = "flex";
+        popup.style.justifyContent = "center";
+        popup.style.alignItems = "center";
+        popup.style.zIndex = 1000;
+
+        // Popup content box
+        const popupContent = document.createElement("div");
+        popupContent.style.backgroundColor = "#062d42";
+        popupContent.style.padding = "20px 30px";
+        popupContent.style.borderRadius = "8px";
+        popupContent.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+        popupContent.style.maxWidth = "400px";
+        popupContent.style.textAlign = "center";
+
+        const message = document.createElement("p");
+        message.textContent = "Codebase indexing can provide better contextual result.";
+
+        const closeBtn = document.createElement("button");
+        closeBtn.textContent = "Close";
+        closeBtn.style.marginTop = "12px";
+
+        closeBtn.addEventListener("click", () => {
+            popup.remove();
+            // modeSelect.value = "Ask";
+        });
+
+        popupContent.appendChild(message);
+        popupContent.appendChild(closeBtn);
+        popup.appendChild(popupContent);
+        document.body.appendChild(popup);
+    }
+});
+
+// ============================= CODE FORMATTING =================
+function renderBotResponse(rawText) {
+    const container = document.createElement("div");
+
+    // split by code blocks
+    const parts = rawText.split(/```([\w-]*)\n([\s\S]*?)```/g);
+
+    for (let i = 0; i < parts.length; i++) {
+
+        // ================= TEXT PART =================
+        if (i % 3 === 0) {
+            const formatted = formatTextBlocks(parts[i]);
+            container.appendChild(formatted);
+        }
+
+        // ================= CODE PART =================
+        if (i % 3 === 1) {
+            // const lang = parts[i] || "code";
+            const rawLang = (parts[i] || "").toLowerCase().trim();
+
+            let safeLang = "python";
+
+            if (rawLang.includes("js")) safeLang = "javascript";
+            else if (rawLang.includes("ts")) safeLang = "typescript";
+            else if (rawLang.includes("py")) safeLang = "python";
+            else if (rawLang) safeLang = rawLang;
+            // till
+            const code = parts[i + 1] || "";
+
+            const codeWrapper = document.createElement("div");
+            codeWrapper.className = "code-block";
+            codeWrapper.style.margin = "12px 0"; //spacing fix
+
+            const langLabel = document.createElement("div");
+            langLabel.className = "code-lang";
+            langLabel.innerText = safeLang;
+
+            // const pre = document.createElement("pre");
+            // pre.textContent = code.trim();
+            const pre = document.createElement("pre");
+            const codeEl = document.createElement("code");
+
+            codeEl.className = `language-${safeLang}`;
+            codeEl.textContent = code.trim();
+
+            pre.appendChild(codeEl);
+
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy-btn";
+            copyBtn.type = "button";
+            copyBtn.textContent = "Copy";
+
+            // ✅ robust clipboard for VS Code webview
+            copyBtn.addEventListener("click", async (e) => {
+                e.stopPropagation();
+
+                try {
+                    await navigator.clipboard.writeText(code);
+                } catch {
+                    // fallback
+                    const textarea = document.createElement("textarea");
+                    textarea.value = code;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand("copy");
+                    textarea.remove();
+                }
+
+                copyBtn.textContent = "Copied!";
+                setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
+            });
+
+            codeWrapper.appendChild(copyBtn);
+            codeWrapper.appendChild(langLabel);
+            codeWrapper.appendChild(pre);
+
+            container.appendChild(codeWrapper);
+
+            i++; // skip code content index
+        }
+    }
+
+    return container;
+}
+
+
+// Example: send code to backend or VS Code API
+function applySuggestedChange(updatedCode) {
+    console.log("Applying suggested code change:", updatedCode);
+    // For VS Code extension: use vscode API
+    // For web app: send fetch('/update-file', {method:'POST', body:{code: updatedCode}})
+}
+
+function formatTextBlocks(text) {
+    const wrapper = document.createElement("div");
+
+    if (!text.trim()) return wrapper;
+
+    // const lines = text.split("\n"); 
+    const lines = text.replace(/\r/g, "").split("\n");
+
+    lines.forEach(line => {
+        const rawLine = line;
+        console.log("LINE DEBUG:", JSON.stringify(rawLine));
+        line = line.trim();
+        if (!line) return;
+
+        let el;
+
+        // // ***text*** → h3
+        // if (/^\*\*\*.+\*\*\*$/.test(line)) {
+        //     el = document.createElement("h3");
+        //     el.textContent = line.slice(3, -3);
+        // }
+        // // **text** → h2
+        // else if (/^\*\*.+\*\*$/.test(line)) {
+        //     el = document.createElement("h2");
+        //     el.textContent = line.slice(2, -2);
+        // }
+        // // *text* → h1
+        // else if (/^\*[^*].+[^*]\*$/.test(line)) {
+        //     el = document.createElement("h1");
+        //     el.textContent = line.slice(1, -1);
+        // }
+        // else {
+        //     el = document.createElement("div");
+        //     el.appendChild(linkifyText(rawLine));
+        // }
+                // ***text*** → h3
+        if (/^\s*\*\*\*(.+?)\*\*\*\s*$/.test(rawLine)) {
+            el = document.createElement("h3");
+            el.textContent = rawLine.replace(/^\s*\*\*\*(.+?)\*\*\*\s*$/, "$1");
+        }
+
+        // **text** → h2
+        else if (/^\s*\*\*(.+?)\*\*\s*$/.test(rawLine)) {
+            el = document.createElement("h2");
+            el.textContent = rawLine.replace(/^\s*\*\*(.+?)\*\*\s*$/, "$1");
+        }
+        // *text* → h1
+        else if (/^\s*\*([^*].+?)\*\s*$/.test(rawLine)) {
+            el = document.createElement("h1");
+            el.textContent = rawLine.replace(/^\s*\*([^*].+?)\*\s*$/, "$1");
+        }
+        else {
+            el = document.createElement("div");
+            el.appendChild(linkifyText(rawLine));
+        }
+
+        el.style.margin = "6px 0"; 
+        wrapper.appendChild(el);
+    });
+
+    return wrapper;
+}
+
+function linkifyText(text) {
+    const fragment = document.createDocumentFragment();
+
+    const urlRegex = /(https?:\/\/[^\s)]+)/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = urlRegex.exec(text)) !== null) {
+        const url = match[0];
+
+        // text before link
+        if (match.index > lastIndex) {
+            fragment.appendChild(
+                document.createTextNode(text.slice(lastIndex, match.index))
+            );
+        }
+
+        // link element
+        const a = document.createElement("a");
+        a.href = url;
+        a.textContent = url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.style.color = "#4ea1ff";
+        a.style.textDecoration = "underline";
+
+        fragment.appendChild(a);
+
+        lastIndex = match.index + url.length;
+    }
+
+    // remaining text
+    if (lastIndex < text.length) {
+        fragment.appendChild(
+            document.createTextNode(text.slice(lastIndex))
+        );
+    }
+
+    return fragment;
+}
+
+
+// ======================== COMPARE ============================
+
+document.getElementById("compareToggle")
+    .addEventListener("change", function () {
+        compareEnabled = this.checked;
+    });
+
+
+// function selectResponse(type, button) {
+
+//     const container = button.closest(".compare-container");
+
+//     const text = type === "stackrag"
+//         ? container.querySelectorAll("p")[0].innerText
+//         : container.querySelectorAll("p")[1].innerText;
+
+//     container.remove();
+
+//     const main = document.getElementById("mainContent");
+
+//     const botMsg = document.createElement("div");
+//     botMsg.className = "message bot";
+//     // botMsg.innerText = text;
+//     botMsg.innerHTML = "";
+//     botMsg.appendChild(renderBotResponse(text));
+
+//     main.appendChild(botMsg);
+
+//     // Add to UI history
+//     conversationHistory.push({
+//         role: "assistant",
+//         content: text
+//     });
+
+//     // 🔥 Save to extension storage
+//     vscode.postMessage({
+//         type: "save_selected_response",
+//         payload: {
+//             mode: currentMode,
+//             prompt: lastUserPrompt,
+//             selectedContent: text
+//         }
+//     });
+
+//     main.scrollTop = main.scrollHeight;
+// }
+
+function selectResponse(type, button) {
+
+    const container = button.closest(".compare-container");
+    const boxes = container.querySelectorAll(".compare-box");
+
+    const selectedBox =
+        type === "stackrag" ? boxes[0] : boxes[1];
+
+    const text = selectedBox.dataset.response; 
+
+    container.remove();
+
+    const main = document.getElementById("mainContent");
+
+    const botMsg = document.createElement("div");
+    botMsg.className = "message bot";
+
+    // ✅ render properly
+    botMsg.appendChild(renderBotResponse(text));
+
+    main.appendChild(botMsg);
+
+    // history
+    conversationHistory.push({
+        role: "assistant",
+        content: text
+    });
+
+    vscode.postMessage({
+        type: "save_selected_response",
+        payload: {
+            mode: currentMode,
+            prompt: lastUserPrompt,
+            selectedContent: text
+        }
+    });
+
+    main.scrollTop = main.scrollHeight;
+}
+
+
+function generateLineDiff(text1, text2) {
+
+    const lines1 = text1.split("\n");
+    const lines2 = text2.split("\n");
+
+    let html = "";
+
+    const maxLength = Math.max(lines1.length, lines2.length);
+
+    for (let i = 0; i < maxLength; i++) {
+
+        const line1 = lines1[i] || "";
+        const line2 = lines2[i] || "";
+
+        if (line1 === line2) {
+            html += `<div class="diff-same">${escapeHtml(line1)}</div>`;
+        } 
+        else {
+            if (line1) {
+                html += `<div class="diff-removed">- ${escapeHtml(line1)}</div>`;
+            }
+            if (line2) {
+                html += `<div class="diff-added">+ ${escapeHtml(line2)}</div>`;
+            }
+        }
+    }
+
+    return html;
+}
+
+function escapeHtml(text) {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+
+// ======================= ADD File Context =======================
+
+function openFileContextPopup() {
+    vscode.postMessage({
+        type: "get_workspace_files"
+    });
+}
+
+
+function confirmFileSelection() {
+    const checkboxes = document.querySelectorAll("#fileList input");
+
+    selectedWorkspaceFiles = Array.from(checkboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+
+    closeFilePopup();
+}
+
+
+function closeFilePopup() {
+    document.getElementById("fileContextPopup").style.display = "none";
+}
+
+
+// ======================== API SETTING POPUP ========================
+
+const apiPopup = document.getElementById("apiPopup");
+const llmButton = document.getElementById("llmButton");
+let llmMenu = document.getElementById("llmMenu");
+
+function toggleLLM() {
+    const menu = document.getElementById("llmMenu");
+    menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+}
+
+selectedLLM = "Supported LLM";
+
+function selectLLM(name) {
+    selectedLLM = name;
+    llmMenu.style.display = "none";
+
+    apiPopup.style.display = "flex";
+
+    // Disable LLM button
+    llmButton.disabled = true;
+    llmButton.style.opacity = "0.5";
+    llmButton.style.cursor = "not-allowed";
+
+    // Save selected LLM label
+    llmButton.innerText = selectedLLM + " ▾";
+
+    // vscode.setState({ selectedLLM });
+}
+
+
+// Submit API
+function submitApi() {
+    closeApiPopup();
+}
+
+function closeApiPopup() {
+    apiPopup.style.display = "none";
+
+    llmButton.disabled = false;
+    llmButton.style.opacity = "1";
+    llmButton.style.cursor = "pointer";
+}
+
+
+// Prevent click inside API popup from closing it
+apiPopup.addEventListener("click", function (event) {
+    event.stopPropagation();
+});
+
+// Prevent click inside LLM menu from closing
+llmMenu.addEventListener("click", function (event) {
+    event.stopPropagation();
+});
+
+// Handle outside click
+document.addEventListener("click", function (event) {
+    const clickedInsideApi = apiPopup.contains(event.target);
+    const clickedInsideLLM = llmMenu.contains(event.target);
+    const clickedLLMButton = llmButton.contains(event.target);
+
+    if (!clickedInsideApi && !clickedInsideLLM && !clickedLLMButton) {
+        closeApiPopup();
+        llmMenu.style.display = "none";
+    }
+});
+
+
+
+// ===================================== TEXT AREA ======================
+
+const textarea = document.getElementById("chatInput");
+
+// adding the code for suggestions
+// Handle suggestion click
+const suggestions = document.querySelectorAll(".suggestion");
+
+suggestions.forEach((item) => {
+    item.addEventListener("click", () => {
+        const text = item.innerText;
+
+        textarea.value = text;
+
+        // Auto resize textarea properly
+        textarea.style.height = "auto";
+        textarea.style.height = textarea.scrollHeight + "px";
+
+        textarea.focus();
+    });
+});
+
+
+textarea.addEventListener("input", () => {
+    textarea.style.height = "auto"; // reset height
+    textarea.style.height = textarea.scrollHeight + "px";
+
+    if (textarea.scrollHeight > 150) {
+        textarea.style.height = "150px";
+        textarea.style.overflowY = "auto";
+    } else {
+        textarea.style.overflowY = "hidden";
+    }
+});
+
+textarea.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault(); // stop new line
+        sendMessage();
+    }
+});
+
+// ============================== CODEBASE SUMMARY ====================
+
+const summaryBtn = document.getElementById("codebaseSummaryBtn");
+
+summaryBtn?.addEventListener("click", () => {
+  const injectedPrompt = "Generate a summary of the current codebase.";
+
+  // put text in input box
+  const textarea = document.getElementById("chatInput");
+  if (textarea) {
+    textarea.value = injectedPrompt;
+    textarea.dataset.specialMode = "codebase"; 
+    
+    textarea.style.height = "auto";
+    textarea.style.height = textarea.scrollHeight + "px";
+    textarea.focus();
+  }
+});
+
+// ===================================== CODEBASE INDEXING =====================
+
+let hasIndexed = false;
+
+const indexPopup = document.getElementById("indexPopup");
+
+indexPopup.addEventListener("click", function (event) {
+    event.stopPropagation();
+});
+
+
+function toggleIndex(event) {
+    const popup = document.getElementById("indexPopup");
+
+    event.stopPropagation(); // prevent immediate closing
+
+    if (popup.style.display === "block") {
+        popup.style.display = "none";
+    } else {
+        popup.style.display = "block";
+    }
+}
+
+document.addEventListener("click", function () {
+    const popup = document.getElementById("indexPopup");
+    popup.style.display = "none";
+});
+
+function startIndexing() {
+
+    const content = document.getElementById("indexContent");
+
+    content.innerHTML = `
+        <div>Indexing...</div>
+        <div class="spinner"></div>
+    `;
+
+    vscode.postMessage({
+        type: "start_indexing"
+    });
+}
+
+function reindex() {
+    const content = document.getElementById("indexContent");
+
+    content.innerHTML = `
+        <div>Reindexing...</div>
+        <div class="spinner"></div>
+    `;
+
+    vscode.postMessage({
+        type: "reindex"
+    });
+}
+
+
+// ======================= HANDLER OF SEND MESSAGE INTERACTION ================
+
+function detectLanguageFromPrompt(prompt) {
+    const text = prompt.toLowerCase();
+
+    if (/\bpython\b|\bpy\b/.test(text)) return "python";
+    if (/\bjavascript\b|\bjs\b/.test(text)) return "javascript";
+    if (/\btypescript\b|\bts\b/.test(text)) return "typescript";
+    
+    return "default"; 
+}
+
+function sendMessage() {
+    const input = document.getElementById("chatInput");
+    const modeSelect = document.getElementById("mode");
+    const specialMode = input.dataset.specialMode || null;
+
+    const prompt = input.value.trim();
+    lastUserPrompt = prompt;
+
+    if (!prompt) return;
+    const landing = document.getElementById("landing");
+    if (landing) {
+        landing.remove();
+    }
+
+    currentView = "chat";
+
+    const mode = modeSelect.value;
+    const language = detectLanguageFromPrompt(prompt);
+
+    const main = document.getElementById("mainContent");
+
+    // Show user message
+    const userMsg = document.createElement("div");
+    userMsg.className = "message user";
+    userMsg.innerText = prompt;
+    main.appendChild(userMsg);
+
+    // Spinner
+    const botContainer = document.createElement("div");
+    botContainer.className = "message bot";
+
+    const spinner = document.createElement("div");
+    spinner.className = "spinner";
+
+    botContainer.appendChild(spinner);
+    main.appendChild(botContainer);
+
+    conversationHistory.push({
+        role: "user",
+        content: prompt
+    });
+
+    vscode.postMessage({
+        type: "chat_request",
+        payload: {
+            prompt,
+            language,
+            mode,
+            history: conversationHistory,
+            selectedFiles: selectedWorkspaceFiles,
+            compare: compareEnabled,
+            specialMode: specialMode
+        }
+    });
+
+    input.value = "";
+    input.style.height = "50px";
+    input.style.overflowY = "hidden";
+    input.focus();
+
+    main.scrollTop = main.scrollHeight;
+}
+
+window.addEventListener("message", event => {
+    const message = event.data;
+
+    if (message.type === "chat_response") {
+
+        const main = document.getElementById("mainContent");
+
+        // Remove spinner
+        const lastBot = main.querySelector(".message.bot:last-child");
+        if (lastBot) lastBot.remove();
+
+        const botMsg = document.createElement("div");
+        botMsg.className = "message bot";
+        botMsg.innerHTML = "";
+        botMsg.appendChild(renderBotResponse(message.payload.content));
+        // botMsg.innerText = message.payload.content;
+
+        main.appendChild(botMsg);
+        main.scrollTop = main.scrollHeight;
+
+
+        conversationHistory.push({
+            role: "assistant",
+            content: message.payload.content
+        });
+    }
+    
+    // if (message.type === "chat_compare_response") {
+
+    //     const main = document.getElementById("mainContent");
+
+    //     // Remove spinner
+    //     const lastBot = main.querySelector(".message.bot:last-child");
+    //     if (lastBot) lastBot.remove();
+
+    //     const container = document.createElement("div");
+    //     container.className = "compare-container";
+
+       
+    //     const stackragText = message.payload.stackrag;
+    //     const copilotText = message.payload.copilot;
+
+       
+    //     const diffHtml = generateLineDiff(stackragText, copilotText);
+
+    //     container.innerHTML = `
+    //         <div class="compare-box">
+    //             <h4>StackRAG</h4>
+    //             <p>${renderBotResponse(escapeHtml(stackragText))}</p>
+    //             <button onclick="selectResponse('stackrag', this)">Select</button>
+    //         </div>
+
+    //         <div class="compare-box">
+    //             <h4>Copilot</h4>
+    //             <p>${renderBotResponse(escapeHtml(copilotText))}</p>
+    //             <button onclick="selectResponse('copilot', this)">Select</button>
+    //         </div>
+
+    //         <div class="compare-box">
+    //             <h4>Diff</h4>
+    //             <div style="overflow:auto; font-family:monospace; font-size:12px; background:#111; padding:8px; border-radius:6px;">
+    //                 ${diffHtml}
+    //             </div>
+    //         </div>
+    //     `;
+    //     main.appendChild(container);
+    // }
+
+    if (message.type === "chat_compare_response") {
+
+        const main = document.getElementById("mainContent");
+
+        // Remove spinner
+        const lastBot = main.querySelector(".message.bot:last-child");
+        if (lastBot) lastBot.remove();
+
+        const container = document.createElement("div");
+        container.className = "compare-container";
+
+        const stackragText = message.payload.stackrag;
+        const copilotText = message.payload.copilot;
+
+        const diffHtml = generateLineDiff(stackragText, copilotText);
+
+        // ===== helper to build compare box =====
+        function createCompareBox(title, text, type) {
+            const box = document.createElement("div");
+            box.className = "compare-box";
+
+            // 🔥 store raw text safely
+            box.dataset.response = text;
+
+            const h4 = document.createElement("h4");
+            h4.textContent = title;
+
+            const contentWrapper = document.createElement("div");
+            contentWrapper.className = "compare-render";
+
+            // ✅ USE YOUR RENDERER PROPERLY
+            contentWrapper.appendChild(renderBotResponse(text));
+
+            const btn = document.createElement("button");
+            btn.textContent = "Select";
+            btn.onclick = () => selectResponse(type, btn);
+
+            box.appendChild(h4);
+            box.appendChild(contentWrapper);
+            box.appendChild(btn);
+
+            return box;
+        }
+
+        // create boxes
+        const stackBox = createCompareBox("StackRAG", stackragText, "stackrag");
+        const copilotBox = createCompareBox("Copilot", copilotText, "copilot");
+
+        // ===== diff box =====
+        const diffBox = document.createElement("div");
+        diffBox.className = "compare-box";
+
+        const diffTitle = document.createElement("h4");
+        diffTitle.textContent = "Diff";
+
+        const diffWrapper = document.createElement("div");
+        diffWrapper.style.cssText =
+            "overflow:auto;font-family:monospace;font-size:12px;background:#111;padding:8px;border-radius:6px;";
+        diffWrapper.innerHTML = diffHtml;
+
+        diffBox.appendChild(diffTitle);
+        diffBox.appendChild(diffWrapper);
+
+        // append all
+        container.appendChild(stackBox);
+        container.appendChild(copilotBox);
+        container.appendChild(diffBox);
+
+        main.appendChild(container);
+    }
+
+
+    if (message.type === "history_data") {
+        fullHistoryCache = message.payload;
+        console.log("DEBUG..received: history",fullHistoryCache);
+        showDates(fullHistoryCache);
+
+    }
+
+    if (message.type === "workspace_files_response") {
+        workspaceFiles = message.payload;
+
+        const fileList = document.getElementById("fileList");
+        fileList.innerHTML = "";
+
+        workspaceFiles.forEach(file => {
+        const wrapper = document.createElement("div");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = file;
+
+        // Restore previous selection
+        if (selectedWorkspaceFiles.includes(file)) {
+            checkbox.checked = true;
+        }
+
+        const label = document.createElement("label");
+        label.innerText = file;
+
+        wrapper.appendChild(checkbox);
+        wrapper.appendChild(label);
+
+        fileList.appendChild(wrapper);
+    });
+
+        document.getElementById("fileContextPopup").style.display = "flex";
+    }
+
+    if (message.type === "index_progress") {
+
+        const { current, total } = message.payload;
+
+        const progressText = document.getElementById("progressText");
+
+        if (progressText) {
+            progressText.innerText = `${current} / ${total} files`;
+        }
+    }
+
+    if (message.type === "index_complete") {
+
+        const { timestamp, totalIndexed } = message.payload;
+
+        const content = document.getElementById("indexContent");
+
+        content.innerHTML = `
+            <div style="color:#4caf50;">✔ Indexing completed</div>
+            <div>${totalIndexed} files indexed</div>
+            <div>Last indexed at ${new Date(timestamp).toLocaleString()}</div>
+            <button onclick="reindex()">Reindex</button>
+        `;
+    }
+
+    if (message.type === "initial_index_state") {
+
+        const last = message.payload.lastIndexedTime;
+
+        if (last) {
+            document.getElementById("indexContent").innerHTML = `
+                <div>Last indexed at ${new Date(last).toLocaleString()}</div>
+                <button onclick="reindex()">Reindex</button>
+            `;
+        }
+    }
+
+});
+
+
+
+// ========================== LANDING UI====================
+
+
+function showLanding() {
+    conversationHistory = [];
+    currentView = "landing";
+    currentDate = null;
+    currentMode = "Ask";
+
+    document.getElementById("mode").value = "Ask";
+
+    const main = document.getElementById("mainContent");
+    main.innerHTML = "";
+
+    const landing = document.createElement("div");
+    landing.className = "landing";
+    landing.id = "landing";
+    landing.innerHTML = `
+        <h1>Welcome to StackRAG</h1>
+        <p>You can start by asking...</p>
+
+        <div class="suggestion">How to write tuple in Python?</div>
+        <div class="suggestion">How to write strict mode in JavaScript?</div>
+    `;
+
+    main.appendChild(landing);
+
+    attachSuggestionHandlers();
+}
+
+function attachSuggestionHandlers() {
+    const suggestions = document.querySelectorAll(".suggestion");
+
+    suggestions.forEach((item) => {
+        item.addEventListener("click", () => {
+            const text = item.innerText;
+
+            textarea.value = text;
+            textarea.style.height = "auto";
+            textarea.style.height = textarea.scrollHeight + "px";
+
+            textarea.focus();
+        });
+    });
+}
+
+
+// ========================== HISTORY UI====================
+
+function showDates(history) {
+    currentView = "dates";
+    const main = document.getElementById("mainContent");
+    main.innerHTML = "";
+
+    addBackButton(showLanding);
+
+    Object.keys(history).forEach(date => {
+        const dayData = history[date];
+        if (!dayData || Object.keys(dayData).length === 0) {
+            return; 
+        }
+
+        const div = document.createElement("div");
+        div.className = "suggestion";
+        div.innerText = date;
+        div.onclick = () => showModes(date, history[date]);
+        main.appendChild(div);
+    });
+}
+
+// function showModes(date, dayData) {
+//     currentView = "modes";
+//     currentDate = date;
+
+//     const main = document.getElementById("mainContent");
+//     main.innerHTML = "";
+
+//     addBackButton(() => showDates(fullHistoryCache));
+
+//     ["Ask", "Debug", "Refactor"].forEach(mode => {
+//         if (!dayData[mode] || dayData[mode].length === 0) return;
+
+//         const btn = document.createElement("div");
+//         btn.className = "suggestion";
+//         btn.innerText = mode;
+//         btn.onclick = () => openChat(date, mode, dayData[mode]);
+//         main.appendChild(btn);
+//     });
+// }
+
+
+function showModes(date, dayData) {
+    currentView = "modes";
+    currentDate = date;
+
+    const main = document.getElementById("mainContent");
+    main.innerHTML = "";
+
+    addBackButton(() => showDates(fullHistoryCache));
+
+    ["Ask", "Debug", "Refactor"].forEach(mode => {
+        if (!dayData[mode] || dayData[mode].length === 0) return;
+
+        // 🔹 wrapper row
+        const row = document.createElement("div");
+        row.className = "suggestion";
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.alignItems = "center";
+
+        // 🔹 mode label
+        const label = document.createElement("span");
+        label.innerText = mode;
+        label.style.flex = "1";
+        label.style.cursor = "pointer";
+
+        label.onclick = () => openChat(date, mode, dayData[mode]);
+
+        // 🔹 delete button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.style.background = "transparent";
+        deleteBtn.style.border = "none";
+        deleteBtn.style.cursor = "pointer";
+        deleteBtn.style.fontSize = "14px";
+        deleteBtn.style.opacity = "0.6";
+
+        deleteBtn.onmouseenter = () => deleteBtn.style.opacity = "1";
+        deleteBtn.onmouseleave = () => deleteBtn.style.opacity = "0.6";
+
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+
+            vscode.postMessage({
+                type: "delete_mode_history",
+                payload: {
+                    date: date,
+                    mode: mode
+                }
+            });
+
+            // 🔥 instant UI update
+            row.remove();
+        };
+
+        row.appendChild(label);
+        row.appendChild(deleteBtn);
+        main.appendChild(row);
+    });
+}
+
+
+function openChat(date, mode, messages) {
+    currentView = "chat";
+    currentDate = date;
+    currentMode = mode;
+
+    document.getElementById("mode").value = mode;
+
+    const main = document.getElementById("mainContent");
+    main.innerHTML = "";
+
+    addBackButton(() => showModes(date, fullHistoryCache[date]));
+
+    conversationHistory = [];
+
+    messages.forEach(msg => {
+
+        const user = document.createElement("div");
+        user.className = "message user";
+        user.innerText = msg.user;
+
+        const bot = document.createElement("div");
+        bot.className = "message bot";
+        // bot.innerText = msg.assistant;
+        bot.innerHTML = "";
+        bot.appendChild(renderBotResponse(msg.assistant));
+
+        main.appendChild(user);
+        main.appendChild(bot);
+
+        // Rebuild conversationHistory correctly
+        conversationHistory.push({
+            role: "user",
+            content: msg.user
+        });
+
+        conversationHistory.push({
+            role: "assistant",
+            content: msg.assistant
+        });
+    });
+
+    // scroll to bottom
+    main.scrollTop = main.scrollHeight;
+
+    document.getElementById("chatInput").focus();
+}
+
+
+
+
+function addBackButton(callback) {
+    const main = document.getElementById("mainContent");
+
+    const back = document.createElement("button");
+    back.className = "small";
+    back.innerText = "← Back";
+    back.style.marginBottom = "12px";
+    back.onclick = callback;
+
+    main.appendChild(back);
+}
+
+
+function loadHistory() {
+    vscode.postMessage({
+        type: "get_history"
+    });
+}
+
+</script>
+
+</body>
+</html>

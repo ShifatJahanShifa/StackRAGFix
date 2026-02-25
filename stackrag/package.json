@@ -1,0 +1,92 @@
+{
+  "name": "stackrag",
+  "displayName": "StackRag",
+  "description": "A coding assistant powered by Stack Overflow and LLM",
+  "engines": {
+    "vscode": "^1.107.0"
+  },
+  "version": "0.0.1",
+  "categories": [
+    "Other"
+  ],
+  "enabledApiProposals": [
+    "languageModelCapabilities",
+    "languageModelSystem"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ragChatContainer",
+          "title": "StackRAG",
+          "icon": "media/stack-overflow.svg"
+        }
+      ]
+    },
+    "views": {
+      "ragChatContainer": [
+        {
+          "id": "ragChatView",
+          "name": "Chat",
+          "type": "webview",
+          "icon": "media/stack-overflow.svg"
+        }
+      ]
+    },
+    "configuration": {
+      "properties": {
+        "stackrag.mistralApiKey": {
+          "type": "string",
+          "description": "Mistral API Key"
+        },
+        "stackrag.qdrantApiKey": {
+          "type": "string",
+          "description": "Qdrant API Key"
+        },
+        "stackrag.qdrantClusterEndpoint": {
+          "type": "string",
+          "description": "Qdrant Cluster Endpoint"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/esprima": "^4.0.6",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/node-fetch": "^2.6.13",
+    "@types/uuid": "^10.0.0",
+    "@types/vscode": "^1.104.0",
+    "@typescript-eslint/eslint-plugin": "^8.45.0",
+    "@typescript-eslint/parser": "^8.45.0",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.36.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@langchain/community": "^1.0.0",
+    "@langchain/core": "^1.0.1",
+    "@langchain/mistralai": "^1.0.4",
+    "@langchain/qdrant": "^1.0.1",
+    "@langchain/textsplitters": "^1.0.1",
+    "@qdrant/js-client-rest": "^1.17.0",
+    "@types/dotenv": "^6.1.1",
+    "chromadb": "^3.3.1",
+    "dotenv": "^16.6.1",
+    "esprima": "^4.0.1",
+    "langchain": "^1.0.1",
+    "node-fetch": "^2.6.7",
+    "uuid": "^13.0.0"
+  }
+}

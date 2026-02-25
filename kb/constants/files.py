@@ -1,0 +1,6 @@
+PY_PICKLE_PATH = "py_bm25_retriever.pkl"
+JS_PICKLE_PATH = "js_bm25_retriever.pkl"
+PYTHON_STATE_FILE = "track_python_fetched_state.json"
+PYTHON_OUTPUT_FILE = "stackoverflow_python_questions.json"
+JAVASCRIPT_STATE_FILE = "track_javascript_fetched_state.json"
+JAVASCRIPT_OUTPUT_FILE = "stackoverflow_javascript_questions.json"
