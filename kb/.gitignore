@@ -1,3 +1,12 @@
+js_bm25_retriever.pkl
+py_bm25_retriever.pkl
 bm25_retriever.pkl
 .env
 node_modules
+__pycache__
+chroma_store
+chroma
+track_python_fetched_state.json
+stackoverflow_python_questions.json
+track_javascript_fetched_state.json
+stackoverflow_javascript_questions.json

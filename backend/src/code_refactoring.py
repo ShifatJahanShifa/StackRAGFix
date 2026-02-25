@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
-from constants.collections import QA_COLLECTION
+from constants.collections import JAVASCRIPT_QA_COLLECTION, PYTHON_QA_COLLECTION
 from models.model_instances import mistral_chat_model
 from prompts.code_refactoring_prompt import CODE_REFACTORING_PROMPT
 from src.keyword_extractor import extract_keywords
@@ -13,14 +13,26 @@ from src.vector_store_retriever import retrieve
 load_dotenv()
 
 
-async def refactor_code(question: str):
+async def refactor_code(
+    question: str,
+    language: str,
+    history: list[dict[str, str]],
+    code: str,
+    currentFileName: str,
+    currentFileContent: str,
+    selectedFilesContent: str,
+):
     """Main entry point"""
     # === STEP 1: Extract keywords ===
     extracted_keywords = await extract_keywords(question)
 
     # === STEP 2: Retrieve Stack Overflow data ===
     print("\nRetrieve first============\n")
-    retrieve_docs = retrieve(QA_COLLECTION, extracted_keywords)
+    retrieve_docs = None
+    if language == "python":
+        retrieve_docs = retrieve(PYTHON_QA_COLLECTION, extracted_keywords, language)
+    else:
+        retrieve_docs = retrieve(JAVASCRIPT_QA_COLLECTION, extracted_keywords, language)
 
     # === STEP 3: Generate final answer ===
     print(f"\n=== Sending {retrieve_docs} to Mistral Model ===\n")
@@ -38,6 +50,11 @@ async def refactor_code(question: str):
     response = await answer_chain.ainvoke(
         {
             "question": question,
+            "history": history,
+            "code": code,
+            "currentFileName": currentFileName,
+            "currentFileContent": currentFileContent,
+            "selectedFilesContent": selectedFilesContent,
             "evidence": json.dumps(retrieve_docs, ensure_ascii=False, indent=2),
         }
     )
