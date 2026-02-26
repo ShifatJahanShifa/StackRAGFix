@@ -50,12 +50,12 @@ async def refactor_code(
     response = await answer_chain.ainvoke(
         {
             "question": question,
+            "evidence": json.dumps(retrieve_docs, ensure_ascii=False, indent=2),
             "history": history,
             "code": code,
             "currentFileName": currentFileName,
             "currentFileContent": currentFileContent,
             "selectedFilesContent": selectedFilesContent,
-            "evidence": json.dumps(retrieve_docs, ensure_ascii=False, indent=2),
         }
     )
 

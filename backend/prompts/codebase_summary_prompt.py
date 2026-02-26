@@ -28,6 +28,6 @@ Output format:
 > Architecture
 > Key Components
 > Notable Observations
-Remember, do not include any hash (#) with the response. 
+Remember, do not include any hash (####) with the response. 
 Rather format the response nicely so that it is beautiful when rendering it as text.
 """

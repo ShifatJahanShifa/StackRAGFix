@@ -377,7 +377,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
         await deleteExistingCollection(rootPath);
 
         // step 2: reindex immediately
-        await indexWorkspace(rootPath, (current, total) => {
+        let totalIndexed = await indexWorkspace(rootPath, (current, total) => {
           webviewView.webview.postMessage({
             type: "index_progress",
             payload: { current, total }
@@ -390,7 +390,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.postMessage({
           type: "index_complete",
-          payload: { timestamp: now }
+          payload: { timestamp: now, totalIndexed }
         });
 
       } catch (err) {

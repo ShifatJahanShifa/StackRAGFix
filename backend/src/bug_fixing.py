@@ -50,12 +50,12 @@ async def fix_bug(
     response = await answer_chain.ainvoke(
         {
             "question": question,
+            "evidence": json.dumps(retrieve_docs, ensure_ascii=False, indent=2),
             "history": history,
             "code": code,
             "currentFileName": currentFileName,
             "currentFileContent": currentFileContent,
             "selectedFilesContent": selectedFilesContent,
-            "evidence": json.dumps(retrieve_docs, ensure_ascii=False, indent=2),
         }
     )
 
